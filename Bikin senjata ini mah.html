@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOADOUT WARFARE HUB — Garena Delta Force</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg-primary: #0a0c0e; --bg-secondary: #111417; --bg-card: #161a1f; --bg-card-hover: #1c2128;
+    --accent: #d4a017; --accent-dim: #8a6a10; --green: #3ddc84; --green-dim: #1e6b3f;
+    --red: #e05252; --blue: #5b9bd5; --border: rgba(255,255,255,0.07);
+    --border-accent: rgba(212,160,23,0.4); --text-primary: #e8e4dc;
+    --text-secondary: #7a8294; --text-muted: #4a5060;
+    --font-head: 'Barlow Condensed', sans-serif; --font-body: 'Barlow', sans-serif; --radius: 4px;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-body); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(10,12,14,0.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .nav-logo { font-family: var(--font-head); font-size: 22px; font-weight: 900; letter-spacing: 2px; color: var(--accent); text-decoration: none; }
+  .nav-logo span { color: var(--text-primary); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-family: var(--font-head); font-size: 14px; letter-spacing: 1px; font-weight: 600; color: var(--text-secondary); text-decoration: none; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-badge { background: var(--accent); color: #000; font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 4px 10px; border-radius: var(--radius); }
+
+  /* HERO */
+  .hero { position: relative; padding: 5rem 2rem 4rem; text-align: center; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(212,160,23,0.12) 0%, transparent 70%), repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.025) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.025) 40px); pointer-events: none; }
+  .hero-tag { display: inline-block; font-family: var(--font-head); font-size: 12px; letter-spacing: 3px; font-weight: 600; color: var(--accent); text-transform: uppercase; border: 1px solid var(--border-accent); padding: 4px 14px; border-radius: var(--radius); margin-bottom: 1.5rem; }
+  .hero h1 { font-family: var(--font-head); font-size: clamp(48px, 8vw, 88px); font-weight: 900; line-height: 0.9; letter-spacing: -1px; text-transform: uppercase; color: var(--text-primary); margin-bottom: 1.5rem; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p { font-size: 17px; color: var(--text-secondary); max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.7; }
+  .hero-stats { display: flex; justify-content: center; gap: 3rem; }
+  .stat-num { font-family: var(--font-head); font-size: 32px; font-weight: 900; color: var(--accent); line-height: 1; }
+  .stat-label { font-size: 12px; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+
+  /* SECTION */
+  section { padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
+  .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+  .section-header h2 { font-family: var(--font-head); font-size: 28px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+  .section-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* FILTER & TOOLBAR */
+  .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn { font-family: var(--font-head); font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 6px 16px; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); border-radius: var(--radius); cursor: pointer; transition: all 0.18s; }
+  .filter-btn:hover { border-color: var(--accent-dim); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+  .btn-add { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 8px 20px; background: var(--accent); color: #000; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+  .btn-add:hover { background: #e8b31e; transform: translateY(-1px); }
+
+  /* GRID */
+  .loadout-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; }
+  .loadout-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; transition: all 0.2s; position: relative; }
+  .loadout-card:hover { background: var(--bg-card-hover); border-color: var(--border-accent); transform: translateY(-2px); }
+  .loadout-card.hidden { display: none; }
+
+  /* DELETE BUTTON */
+  .btn-delete { position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; background: rgba(224,82,82,0.15); border: 1px solid rgba(224,82,82,0.3); border-radius: 3px; color: var(--red); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: all 0.18s; z-index: 5; }
+  .loadout-card:hover .btn-delete { opacity: 1; }
+  .btn-delete:hover { background: rgba(224,82,82,0.3); }
+
+  /* CARD PARTS */
+  .card-header { padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; padding-right: 2.5rem; }
+  .card-weapon-type { font-family: var(--font-head); font-size: 11px; letter-spacing: 2px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+  .card-title { font-family: var(--font-head); font-size: 22px; font-weight: 900; color: var(--text-primary); line-height: 1.1; }
+  .tier-badge { font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 1px; padding: 4px 10px; border-radius: var(--radius); white-space: nowrap; }
+  .tier-S { background: rgba(212,160,23,0.2); color: var(--accent); border: 1px solid var(--accent-dim); }
+  .tier-A { background: rgba(61,220,132,0.12); color: var(--green); border: 1px solid var(--green-dim); }
+  .tier-B { background: rgba(91,155,213,0.12); color: var(--blue); border: 1px solid rgba(91,155,213,0.3); }
+  .card-visual { height: 80px; background: var(--bg-secondary); display: flex; align-items: center; padding: 0 1.25rem; }
+  .weapon-icon { font-size: 36px; opacity: 0.7; letter-spacing: 4px; }
+  .card-body { padding: 1rem 1.25rem; }
+  .attach-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+  .attach-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .attach-tag { font-size: 12px; padding: 3px 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 3px; color: var(--text-secondary); }
+  .attach-tag.highlight { background: rgba(212,160,23,0.08); border-color: rgba(212,160,23,0.25); color: var(--accent); }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .stat-mini { text-align: center; }
+  .stat-mini-val { font-family: var(--font-head); font-size: 17px; font-weight: 700; }
+  .stat-mini-key { font-size: 10px; letter-spacing: 0.5px; color: var(--text-muted); text-transform: uppercase; }
+  .card-footer { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-muted); }
+  .card-author { display: flex; align-items: center; gap: 6px; }
+  .author-dot { width: 22px; height: 22px; border-radius: 50%; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 11px; font-weight: 700; color: var(--accent); }
+
+  /* EMPTY STATE */
+  .empty-state { grid-column: 1/-1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 1rem; opacity: 0.4; }
+  .empty-state p { font-size: 15px; }
+
+  /* GUIDES */
+  .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .guide-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 1.25rem; transition: all 0.2s; }
+  .guide-card:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+  .guide-icon { font-size: 24px; margin-bottom: 0.75rem; }
+  .guide-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .guide-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  /* MODAL OVERLAY */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg-card); border: 1px solid var(--border-accent); border-radius: 8px; width: 90%; max-width: 640px; max-height: 90vh; overflow-y: auto; padding: 2rem; position: relative; }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); width: 28px; height: 28px; border-radius: 3px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ADD LOADOUT FORM MODAL */
+  .modal-title-form { font-family: var(--font-head); font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .modal-title-form span { color: var(--accent); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .form-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; color: var(--text-muted); }
+  .form-input, .form-select, .form-textarea {
+    background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius);
+    color: var(--text-primary); font-family: var(--font-body); font-size: 14px; padding: 8px 12px;
+    transition: border-color 0.2s; outline: none; width: 100%;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent-dim); }
+  .form-select { appearance: none; cursor: pointer; }
+  .form-textarea { min-height: 70px; resize: vertical; }
+
+  /* attachment slot rows */
+  .slots-section { margin-bottom: 12px; }
+  .slots-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+  .slot-row { display: grid; grid-template-columns: 130px 1fr; gap: 8px; margin-bottom: 6px; }
+  .slot-row input { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary); font-family: var(--font-body); font-size: 13px; padding: 6px 10px; outline: none; width: 100%; transition: border-color 0.2s; }
+  .slot-row input:focus { border-color: var(--accent-dim); }
+  .slot-key { color: var(--text-muted); font-size: 13px; display: flex; align-items: center; padding-left: 2px; }
+
+  .stat-inputs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+  .stat-input-group { display: flex; flex-direction: column; gap: 4px; }
+  .stat-input-group label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); text-align: center; }
+  .stat-input-group input { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary); font-family: var(--font-head); font-size: 18px; font-weight: 700; padding: 6px; text-align: center; outline: none; width: 100%; transition: border-color 0.2s; }
+  .stat-input-group input:focus { border-color: var(--accent-dim); }
+
+  .form-actions { display: flex; gap: 10px; margin-top: 1rem; }
+  .btn-primary { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 24px; background: var(--accent); color: #000; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.18s; flex: 1; }
+  .btn-primary:hover { background: #e8b31e; }
+  .btn-secondary { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 20px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.18s; }
+  .btn-secondary:hover { border-color: var(--red); color: var(--red); }
+
+  /* DETAIL MODAL */
+  .modal-type { font-family: var(--font-head); font-size: 12px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+  .modal-big-title { font-family: var(--font-head); font-size: 32px; font-weight: 900; color: var(--text-primary); margin-bottom: 1.5rem; }
+  .modal-section { margin-bottom: 1.5rem; }
+  .modal-section h3 { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .attach-full { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .attach-item { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; }
+  .attach-item-slot { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+  .attach-item-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .modal-note { background: rgba(212,160,23,0.07); border: 1px solid rgba(212,160,23,0.2); border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .modal-note strong { color: var(--accent); }
+
+  /* CONFIRM DIALOG */
+  .confirm-box { text-align: center; padding: 1rem; }
+  .confirm-box .ci { font-size: 40px; margin-bottom: 1rem; }
+  .confirm-box h3 { font-family: var(--font-head); font-size: 24px; font-weight: 900; color: var(--text-primary); margin-bottom: 0.5rem; }
+  .confirm-box p { color: var(--text-secondary); font-size: 14px; margin-bottom: 1.5rem; }
+  .confirm-box .card-name-preview { color: var(--accent); font-weight: 600; }
+  .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+  .btn-danger { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 24px; background: var(--red); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.18s; }
+  .btn-danger:hover { background: #c43f3f; }
+
+  /* NOTIF */
+  .notif { position: fixed; bottom: 2rem; right: 2rem; background: var(--bg-card); border: 1px solid var(--border-accent); border-radius: 6px; padding: 1rem 1.25rem; font-size: 14px; color: var(--text-primary); z-index: 300; transform: translateY(100px); opacity: 0; transition: all 0.3s; }
+  .notif.show { transform: translateY(0); opacity: 1; }
+  .notif-title { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: var(--green); margin-bottom: 2px; }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 13px; color: var(--text-muted); }
+  footer strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">LOADOUT<span>HUB</span></a>
+  <ul class="nav-links">
+    <li><a href="#loadouts">Loadouts</a></li>
+    <li><a href="#guides">Guides</a></li>
+  </ul>
+  <span class="nav-badge">GARENA DELTA FORCE</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Community Weapon Database</div>
+  <h1>Master<br>Your <em>Arsenal</em></h1>
+  <p>Build, share, dan temukan loadout senjata terbaik dari komunitas platform Tiktok Anaxa.</p>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num" id="stat-count">6</div><div class="stat-label">Loadout</div></div>
+    <div class="stat-item"><div class="stat-num">S+</div><div class="stat-label">Top Tier</div></div>
+    <div class="stat-item"><div class="stat-num">🔥</div><div class="stat-label">Meta</div></div>
+  </div>
+</div>
+
+<section id="loadouts">
+  <div class="section-header"><h2>Loadout Database</h2></div>
+  <div class="toolbar">
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">Semua</button>
+      <button class="filter-btn" data-filter="ar">Assault Rifle</button>
+      <button class="filter-btn" data-filter="smg">SMG</button>
+      <button class="filter-btn" data-filter="sniper">Sniper</button>
+      <button class="filter-btn" data-filter="shotgun">Shotgun</button>
+      <button class="filter-btn" data-filter="lmg">LMG</button>
+    </div>
+    <button class="btn-add" onclick="openAddModal()">+ Tambah Loadout</button>
+  </div>
+  <div class="loadout-grid" id="loadout-grid"></div>
+</section>
+
+<section id="guides">
+  <div class="section-header"><h2>Tips & Guides</h2></div>
+  <div class="guide-grid">
+    <div class="guide-card"><div class="guide-icon">🎯</div><div class="guide-title">Cara Baca Stat Senjata</div><div class="guide-desc">Pahami arti DMG, ACC, RPM, dan CTRL — 4 stat utama yang menentukan performa senjata di berbagai situasi.</div></div>
+    <div class="guide-card"><div class="guide-icon">🔧</div><div class="guide-title">Prioritas Attachment</div><div class="guide-desc">Bukan semua slot harus diisi mahal. Pelajari slot mana yang paling berpengaruh: muzzle, sight, dan stock.</div></div>
+    <div class="guide-card"><div class="guide-icon">💰</div><div class="guide-title">Build Budget vs Meta</div><div class="guide-desc">Budget ketat bukan berarti kalah. Ada build murah yang tetap bisa perform di Armory dan Northridge.</div></div>
+    <div class="guide-card"><div class="guide-icon">🗺️</div><div class="guide-title">Loadout per Map</div><div class="guide-desc">Farm map beda kebutuhan. CQC untuk Factory, mid-range untuk Valley, sniper untuk Armory outer ring.</div></div>
+  </div>
+</section>
+
+<footer><strong>LOADOUT HUB</strong> — Garena Delta Force Indonesia Community &nbsp;·&nbsp; Bukan afiliasi resmi Tencent / Morefun Studios</footer>
+
+<!-- MODAL: Detail Loadout -->
+<div class="modal-overlay" id="modal-detail" onclick="closeOnBg(event,'modal-detail')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+    <div id="modal-detail-inner"></div>
+  </div>
+</div>
+
+<!-- MODAL: Tambah Loadout -->
+<div class="modal-overlay" id="modal-add" onclick="closeOnBg(event,'modal-add')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-add')">✕</button>
+    <div class="modal-title-form">Tambah <span>Loadout</span> Baru</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nama Loadout *</label>
+        <input class="form-input" id="f-name" placeholder="contoh: AK-74 Stealth">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username *</label>
+        <input class="form-input" id="f-author" placeholder="contoh: GunZ_ID">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Kategori Senjata *</label>
+        <select class="form-select" id="f-cat">
+          <option value="">Pilih...</option>
+          <option value="ar">Assault Rifle</option>
+          <option value="smg">SMG</option>
+          <option value="sniper">Sniper Rifle</option>
+          <option value="shotgun">Shotgun</option>
+          <option value="lmg">LMG</option>
+          <option value="pistol">Pistol</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tier</label>
+        <select class="form-select" id="f-tier">
+          <option value="S">S-Tier</option>
+          <option value="A" selected>A-Tier</option>
+          <option value="B">B-Tier</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Range / Situasi</label>
+      <input class="form-input" id="f-range" placeholder="contoh: CQC + Mid Range">
+    </div>
+
+    <div class="slots-section">
+      <div class="slots-label">Attachment (isi yang ada saja)</div>
+      <div class="slot-row"><span class="slot-key">Muzzle</span><input id="s-muzzle" placeholder="contoh: PBS-1 Suppressor"></div>
+      <div class="slot-row"><span class="slot-key">Barrel</span><input id="s-barrel" placeholder="contoh: 16' Standard Barrel"></div>
+      <div class="slot-row"><span class="slot-key">Handguard</span><input id="s-handguard" placeholder="contoh: Zenitco B-10M"></div>
+      <div class="slot-row"><span class="slot-key">Optic / Sight</span><input id="s-optic" placeholder="contoh: Elcan SpecterDR 1-4x"></div>
+      <div class="slot-row"><span class="slot-key">Laser</span><input id="s-laser" placeholder="contoh: ATPIAL-C"></div>
+      <div class="slot-row"><span class="slot-key">Stock</span><input id="s-stock" placeholder="contoh: Magpul CTR Stock"></div>
+      <div class="slot-row"><span class="slot-key">Grip / Foregrip</span><input id="s-grip" placeholder="contoh: Magpul AFG-2"></div>
+      <div class="slot-row"><span class="slot-key">Magazine</span><input id="s-mag" placeholder="contoh: PMAG 30rnd"></div>
+      <div class="slot-row"><span class="slot-key">Ammo</span><input id="s-ammo" placeholder="contoh: 5.56x45 M855A1"></div>
+    </div>
+
+    <div class="slots-label" style="margin-bottom:8px">Statistik (0–100 / RPM bebas)</div>
+    <div class="stat-inputs">
+      <div class="stat-input-group"><label>DMG</label><input id="st-dmg" type="number" min="0" max="100" placeholder="80"></div>
+      <div class="stat-input-group"><label>ACC</label><input id="st-acc" type="number" min="0" max="100" placeholder="75"></div>
+      <div class="stat-input-group"><label>RPM</label><input id="st-rpm" type="number" min="0" placeholder="700"></div>
+      <div class="stat-input-group"><label>CTRL</label><input id="st-ctrl" type="number" min="0" max="100" placeholder="70"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tips & Catatan</label>
+      <textarea class="form-textarea" id="f-tips" placeholder="Tips penggunaan, situasi terbaik, pasangan armor, dll..."></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-secondary" onclick="closeModal('modal-add')">Batal</button>
+      <button class="btn-primary" onclick="saveLoadout()">⚡ Simpan Loadout</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Konfirmasi Hapus -->
+<div class="modal-overlay" id="modal-confirm" onclick="closeOnBg(event,'modal-confirm')">
+  <div class="modal" style="max-width:400px">
+    <div class="confirm-box">
+      <div class="ci">🗑️</div>
+      <h3>Hapus Loadout?</h3>
+      <p>Loadout <span class="card-name-preview" id="confirm-name"></span> akan dihapus permanen dan tidak bisa dikembalikan.</p>
+      <div class="confirm-actions">
+        <button class="btn-secondary" onclick="closeModal('modal-confirm')">Batal</button>
+        <button class="btn-danger" onclick="confirmDelete()">Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIF -->
+<div class="notif" id="notif"><div class="notif-title" id="notif-title">✓ Berhasil!</div><div id="notif-msg">Loadout disimpan.</div></div>
+
+<script>
+// ─── DATA AWAL (template bawaan) ───
+const DEFAULT_LOADOUTS = [
+  {
+    id: 'tpl-1', title: 'M4A1 — Meta King', type: 'ar', typeLabel: 'Assault Rifle', tier: 'S',
+    author: 'GunZ_ID', range: 'CQC + Mid', icon: '🔫',
+    slots: [{slot:'Muzzle',name:'JP Enterprises Flash Hider'},{slot:'Barrel',name:'Daniel Defense 14.5"'},{slot:'Handguard',name:'BCM GUNFIGHTER MOD 3'},{slot:'Optic',name:'Elcan SpecterDR 1-4x'},{slot:'Laser',name:'ATPIAL-C (AN/PEQ-15A)'},{slot:'Stock',name:'Strike Industries PDW Stock'},{slot:'Grip',name:'Magpul MIAD'},{slot:'Magazine',name:'Magpul PMAG 30rnd'},{slot:'Ammo',name:'5.56x45 M855A1'}],
+    stats: {dmg:87, acc:74, rpm:720, ctrl:91},
+    tips: 'Gunakan ammo M855A1 untuk tembus Level 4 armor. Elcan cocok toggle 1x-4x, ideal CQC sampai medium. Laser ATPIAL aktifkan saat masuk ruangan sempit.',
+    likes: 234
+  },
+  {
+    id: 'tpl-2', title: 'MP5 — Rush Build', type: 'smg', typeLabel: 'SMG', tier: 'A',
+    author: 'RaidKing', range: 'CQC', icon: '🔫',
+    slots: [{slot:'Muzzle',name:'Surefire MB556K'},{slot:'Barrel',name:'MP5 Navy 8.9" Barrel'},{slot:'Handguard',name:'Midwest Industries Handguard'},{slot:'Optic',name:'Aimpoint Micro T-2'},{slot:'Stock',name:'MP5 Navy Fixed Stock'},{slot:'Grip',name:'Magpul AFG-2'},{slot:'Magazine',name:'MP5 30rnd'},{slot:'Ammo',name:'9x19 7N21 AP'}],
+    stats: {dmg:71, acc:82, rpm:800, ctrl:88},
+    tips: 'Build aggro rush. Masuk pintu dulu, tembak duluan. Aimpoint T-2 responsif dan minim parallax. Ammo 7N21 AP bisa tembus soft armor.',
+    likes: 178
+  },
+  {
+    id: 'tpl-3', title: 'SVD — Long Ranger', type: 'sniper', typeLabel: 'Sniper Rifle', tier: 'S',
+    author: 'SniperKu', range: 'Long Range', icon: '🎯',
+    slots: [{slot:'Optic',name:'PSO-1 4x24 Scope'},{slot:'Handguard',name:'Zenitco B-10M'},{slot:'Muzzle',name:'SVD Muzzle Brake'},{slot:'Bipod',name:'SVD Standard Bipod'},{slot:'Stock',name:'SVD Standard Stock'},{slot:'Magazine',name:'SVD 10rnd'},{slot:'Ammo',name:'7.62x54R SNB'}],
+    stats: {dmg:95, acc:93, rpm:420, ctrl:65},
+    tips: 'SVD bukan bolt-action — bisa follow-up shot cepat. Pakai bipod saat prone untuk zero recoil. SNB ammo sangat efektif terhadap armor tebal di jarak 200m+.',
+    likes: 312
+  },
+  {
+    id: 'tpl-4', title: 'AKM — Budget Beast', type: 'ar', typeLabel: 'Assault Rifle', tier: 'A',
+    author: 'BudgetJago', range: 'All Range', icon: '🔫',
+    slots: [{slot:'Muzzle',name:'PBS-1 Sound Suppressor'},{slot:'Optic',name:'Kobra Red Dot EKP-8'},{slot:'Stock',name:'Zhukov-S Folding Stock'},{slot:'Handguard',name:'Zenitco PT-1 Foregrip'},{slot:'Magazine',name:'AKM 30rnd Bakelite'},{slot:'Ammo',name:'7.62x39 BP'}],
+    stats: {dmg:89, acc:68, rpm:600, ctrl:72},
+    tips: 'Build murah tapi mematikan. PBS-1 suppressor bantu stealth farming. BP ammo cukup untuk Level 3 armor. Total harga sekitar 80-100k Koen.',
+    likes: 156
+  },
+  {
+    id: 'tpl-5', title: 'M870 — Room Clearer', type: 'shotgun', typeLabel: 'Shotgun', tier: 'B',
+    author: 'ShotgunHero', range: 'CQC Only', icon: '💥',
+    slots: [{slot:'Stock',name:'Mesa Tactical Urbino Stock'},{slot:'Optic',name:'Aimpoint PRO'},{slot:'Forend',name:'Mesa Tactical Forend w/ Rail'},{slot:'Light',name:'Streamlight TLR-1 HL'},{slot:'Shell Holder',name:'Mesa 6-Shell Side Saddle'},{slot:'Ammo',name:'12/70 AP-20 Flechette'}],
+    stats: {dmg:99, acc:45, rpm:130, ctrl:70},
+    tips: 'Shotgun keras di jarak 0-10m. Lebih dari itu mulai drop off parah. Ideal untuk factory indoor. Flechette ammo punya penetrasi lumayan untuk shotgun.',
+    likes: 98
+  },
+  {
+    id: 'tpl-6', title: 'RPK-16 — Suppression God', type: 'lmg', typeLabel: 'LMG', tier: 'A',
+    author: 'ZeroRecoil', range: 'Mid + Long', icon: '🔥',
+    slots: [{slot:'Optic',name:'ACOG TA648RMR 6x'},{slot:'Muzzle',name:'DTK-1 Muzzle Brake'},{slot:'Bipod',name:'RPK-16 Standard Bipod'},{slot:'Stock',name:'Zhukov-S Stock'},{slot:'Magazine',name:'RPK-16 95rnd Drum'},{slot:'Ammo',name:'5.45x39 7N39 Igolnik'}],
+    stats: {dmg:86, acc:79, rpm:550, ctrl:75},
+    tips: 'RPK paling kuat saat prone dengan bipod. 95rnd drum = suppression panjang. Igolnik ammo adalah salah satu 5.45 terbaik, tembus armor tinggi.',
+    likes: 201
+  }
+];
+
+// ─── STATE ───
+let loadouts = [];
+let currentFilter = 'all';
+let pendingDeleteId = null;
+
+// ─── LOAD / SAVE ke localStorage ───
+function saveToStorage() {
+  try { localStorage.setItem('loadout_hub_v2', JSON.stringify(loadouts)); } catch(e) {}
+}
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem('loadout_hub_v2');
+    if (raw) { loadouts = JSON.parse(raw); return; }
+  } catch(e) {}
+  loadouts = JSON.parse(JSON.stringify(DEFAULT_LOADOUTS));
+  saveToStorage();
+}
+
+// ─── STAT COLOR ───
+function statColor(key, val) {
+  if (key === 'rpm') return 'var(--text-primary)';
+  const n = Number(val);
+  if (n >= 85) return key === 'dmg' ? 'var(--red)' : 'var(--green)';
+  if (n >= 70) return 'var(--green)';
+  if (n >= 55) return 'var(--accent)';
+  return 'var(--red)';
+}
+
+// ─── RENDER CARD ───
+function renderCard(ld) {
+  const tierClass = `tier-${ld.tier}`;
+  const filledSlots = (ld.slots || []).filter(s => s.name && s.name.trim());
+  const topTags = filledSlots.slice(0, 4).map((s, i) =>
+    `<span class="attach-tag ${i < 2 ? 'highlight' : ''}">${s.name}</span>`).join('');
+
+  const div = document.createElement('div');
+  div.className = 'loadout-card';
+  div.dataset.type = ld.type;
+  div.dataset.id = ld.id;
+  div.innerHTML = `
+    <button class="btn-delete" title="Hapus loadout" onclick="askDelete(event,'${ld.id}','${escHtml(ld.title)}')">✕</button>
+    <div class="card-header" onclick="openDetail('${ld.id}')" style="cursor:pointer">
+      <div>
+        <div class="card-weapon-type">${ld.typeLabel}</div>
+        <div class="card-title">${escHtml(ld.title)}</div>
+      </div>
+      <span class="tier-badge ${tierClass}">${ld.tier}-TIER</span>
+    </div>
+    <div class="card-visual" onclick="openDetail('${ld.id}')" style="cursor:pointer">
+      <span class="weapon-icon">${ld.icon || '🔫'} ${ld.typeLabel}</span>
+    </div>
+    <div class="card-body" onclick="openDetail('${ld.id}')" style="cursor:pointer">
+      <div class="attach-label">Attachment Utama</div>
+      <div class="attach-tags">${topTags || '<span class="attach-tag">Tidak ada attachment</span>'}</div>
+      <div class="stats-row">
+        <div class="stat-mini"><div class="stat-mini-val" style="color:${statColor('dmg',ld.stats.dmg)}">${ld.stats.dmg||'—'}</div><div class="stat-mini-key">DMG</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="color:${statColor('acc',ld.stats.acc)}">${ld.stats.acc||'—'}</div><div class="stat-mini-key">ACC</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">${ld.stats.rpm||'—'}</div><div class="stat-mini-key">RPM</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="color:${statColor('ctrl',ld.stats.ctrl)}">${ld.stats.ctrl||'—'}</div><div class="stat-mini-key">CTRL</div></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="card-author">
+        <div class="author-dot">${(ld.author||'?').slice(0,2).toUpperCase()}</div>
+        ${escHtml(ld.author||'Anonim')}
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text-muted)">
+        <span>♥ ${ld.likes||0}</span>
+        <span>↑ ${escHtml(ld.range||'-')}</span>
+      </div>
+    </div>`;
+  return div;
+}
+
+function escHtml(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── RENDER ALL ───
+function renderGrid() {
+  const grid = document.getElementById('loadout-grid');
+  grid.innerHTML = '';
+  const visible = loadouts.filter(ld => currentFilter === 'all' || ld.type === currentFilter);
+  if (visible.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>Belum ada loadout di kategori ini.<br>Klik <strong>+ Tambah Loadout</strong> untuk mulai!</p></div>`;
+  } else {
+    visible.forEach(ld => grid.appendChild(renderCard(ld)));
+  }
+  document.getElementById('stat-count').textContent = loadouts.length;
+}
+
+// ─── FILTER ───
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    currentFilter = this.dataset.filter;
+    renderGrid();
+  });
+});
+
+// ─── MODAL HELPERS ───
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeOnBg(e, id) { if (e.target.id === id) closeModal(id); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') ['modal-detail','modal-add','modal-confirm'].forEach(closeModal);
+});
+
+// ─── ADD MODAL ───
+function openAddModal() {
+  ['f-name','f-author','f-range','f-tips','s-muzzle','s-barrel','s-handguard','s-optic','s-laser','s-stock','s-grip','s-mag','s-ammo','st-dmg','st-acc','st-rpm','st-ctrl']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('f-cat').value = '';
+  document.getElementById('f-tier').value = 'A';
+  openModal('modal-add');
+}
+
+const CAT_LABELS = { ar:'Assault Rifle', smg:'SMG', sniper:'Sniper Rifle', shotgun:'Shotgun', lmg:'LMG', pistol:'Pistol' };
+const CAT_ICONS  = { ar:'🔫', smg:'🔫', sniper:'🎯', shotgun:'💥', lmg:'🔥', pistol:'🔫' };
+
+function saveLoadout() {
+  const name   = document.getElementById('f-name').value.trim();
+  const author = document.getElementById('f-author').value.trim();
+  const cat    = document.getElementById('f-cat').value;
+  if (!name) { alert('Nama loadout wajib diisi!'); return; }
+  if (!cat)  { alert('Pilih kategori senjata dulu!'); return; }
+
+  const slots = [
+    {slot:'Muzzle',    name: document.getElementById('s-muzzle').value.trim()},
+    {slot:'Barrel',    name: document.getElementById('s-barrel').value.trim()},
+    {slot:'Handguard', name: document.getElementById('s-handguard').value.trim()},
+    {slot:'Optic',     name: document.getElementById('s-optic').value.trim()},
+    {slot:'Laser',     name: document.getElementById('s-laser').value.trim()},
+    {slot:'Stock',     name: document.getElementById('s-stock').value.trim()},
+    {slot:'Grip',      name: document.getElementById('s-grip').value.trim()},
+    {slot:'Magazine',  name: document.getElementById('s-mag').value.trim()},
+    {slot:'Ammo',      name: document.getElementById('s-ammo').value.trim()},
+  ].filter(s => s.name);
+
+  const newLd = {
+    id: 'user-' + Date.now(),
+    title: name,
+    type: cat,
+    typeLabel: CAT_LABELS[cat] || cat,
+    tier: document.getElementById('f-tier').value,
+    author: author || 'Anonim',
+    range: document.getElementById('f-range').value.trim() || '-',
+    icon: CAT_ICONS[cat] || '🔫',
+    slots: slots,
+    stats: {
+      dmg:  parseInt(document.getElementById('st-dmg').value)  || 0,
+      acc:  parseInt(document.getElementById('st-acc').value)  || 0,
+      rpm:  parseInt(document.getElementById('st-rpm').value)  || 0,
+      ctrl: parseInt(document.getElementById('st-ctrl').value) || 0,
+    },
+    tips: document.getElementById('f-tips').value.trim(),
+    likes: 0
+  };
+
+  loadouts.unshift(newLd);
+  saveToStorage();
+  closeModal('modal-add');
+  currentFilter = 'all';
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-filter="all"]').classList.add('active');
+  renderGrid();
+  showNotif('✓ Loadout Ditambahkan!', `"${name}" berhasil disimpan.`);
+}
+
+// ─── DELETE ───
+function askDelete(e, id, title) {
+  e.stopPropagation();
+  pendingDeleteId = id;
+  document.getElementById('confirm-name').textContent = '"' + title + '"';
+  openModal('modal-confirm');
+}
+function confirmDelete() {
+  if (!pendingDeleteId) return;
+  loadouts = loadouts.filter(ld => ld.id !== pendingDeleteId);
+  saveToStorage();
+  renderGrid();
+  closeModal('modal-confirm');
+  showNotif('🗑️ Dihapus', 'Loadout berhasil dihapus.', 'var(--red)');
+  pendingDeleteId = null;
+}
+
+// ─── DETAIL MODAL ───
+function openDetail(id) {
+  const ld = loadouts.find(l => l.id === id);
+  if (!ld) return;
+  const tierClass = `tier-${ld.tier}`;
+  const filled = (ld.slots||[]).filter(s => s.name);
+  const slotsHtml = filled.length
+    ? filled.map(s => `<div class="attach-item"><div class="attach-item-slot">${escHtml(s.slot)}</div><div class="attach-item-name">${escHtml(s.name)}</div></div>`).join('')
+    : '<p style="color:var(--text-muted);font-size:13px">Tidak ada attachment yang diisi.</p>';
+
+  document.getElementById('modal-detail-inner').innerHTML = `
+    <div class="modal-type">${escHtml(ld.typeLabel)}</div>
+    <div class="modal-big-title">${escHtml(ld.title)} <span class="tier-badge ${tierClass}">${ld.tier}-TIER</span></div>
+    <div class="modal-section">
+      <h3>Attachment Lengkap</h3>
+      <div class="attach-full">${slotsHtml}</div>
+    </div>
+    <div class="modal-section">
+      <h3>Statistik</h3>
+      <div class="stats-row" style="border:none;padding:0">
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px;color:${statColor('dmg',ld.stats.dmg)}">${ld.stats.dmg||'—'}</div><div class="stat-mini-key">Damage</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px;color:${statColor('acc',ld.stats.acc)}">${ld.stats.acc||'—'}</div><div class="stat-mini-key">Accuracy</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px">${ld.stats.rpm||'—'}</div><div class="stat-mini-key">RPM</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px;color:${statColor('ctrl',ld.stats.ctrl)}">${ld.stats.ctrl||'—'}</div><div class="stat-mini-key">Control</div></div>
+      </div>
+    </div>
+    ${ld.tips ? `<div class="modal-section"><h3>Tips & Catatan</h3><div class="modal-note"><strong>Tips:</strong> ${escHtml(ld.tips)}</div></div>` : ''}
+    <div style="font-size:13px;color:var(--text-muted);margin-top:0.5rem">Oleh: ${escHtml(ld.author||'Anonim')} &nbsp;·&nbsp; ♥ ${ld.likes||0} &nbsp;·&nbsp; ${escHtml(ld.range||'-')}`;
+  openModal('modal-detail');
+}
+
+// ─── NOTIF ───
+function showNotif(title, msg, color) {
+  const n = document.getElementById('notif');
+  document.getElementById('notif-title').textContent = title;
+  document.getElementById('notif-title').style.color = color || 'var(--green)';
+  document.getElementById('notif-msg').textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 3200);
+}
+
+// ─── INIT ───
+loadFromStorage();
+renderGrid();
+</script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOADOUT HUB — Arena Breakout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg-primary: #0a0c0e; --bg-secondary: #111417; --bg-card: #161a1f; --bg-card-hover: #1c2128;
+    --accent: #d4a017; --accent-dim: #8a6a10; --green: #3ddc84; --green-dim: #1e6b3f;
+    --red: #e05252; --blue: #5b9bd5; --border: rgba(255,255,255,0.07);
+    --border-accent: rgba(212,160,23,0.4); --text-primary: #e8e4dc;
+    --text-secondary: #7a8294; --text-muted: #4a5060;
+    --font-head: 'Barlow Condensed', sans-serif; --font-body: 'Barlow', sans-serif; --radius: 4px;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-body); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(10,12,14,0.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .nav-logo { font-family: var(--font-head); font-size: 22px; font-weight: 900; letter-spacing: 2px; color: var(--accent); text-decoration: none; }
+  .nav-logo span { color: var(--text-primary); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-family: var(--font-head); font-size: 14px; letter-spacing: 1px; font-weight: 600; color: var(--text-secondary); text-decoration: none; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-badge { background: var(--accent); color: #000; font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 4px 10px; border-radius: var(--radius); }
+
+  /* HERO */
+  .hero { position: relative; padding: 5rem 2rem 4rem; text-align: center; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(212,160,23,0.12) 0%, transparent 70%), repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.025) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.025) 40px); pointer-events: none; }
+  .hero-tag { display: inline-block; font-family: var(--font-head); font-size: 12px; letter-spacing: 3px; font-weight: 600; color: var(--accent); text-transform: uppercase; border: 1px solid var(--border-accent); padding: 4px 14px; border-radius: var(--radius); margin-bottom: 1.5rem; }
+  .hero h1 { font-family: var(--font-head); font-size: clamp(48px, 8vw, 88px); font-weight: 900; line-height: 0.9; letter-spacing: -1px; text-transform: uppercase; color: var(--text-primary); margin-bottom: 1.5rem; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p { font-size: 17px; color: var(--text-secondary); max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.7; }
+  .hero-stats { display: flex; justify-content: center; gap: 3rem; }
+  .stat-num { font-family: var(--font-head); font-size: 32px; font-weight: 900; color: var(--accent); line-height: 1; }
+  .stat-label { font-size: 12px; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+
+  /* SECTION */
+  section { padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
+  .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+  .section-header h2 { font-family: var(--font-head); font-size: 28px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+  .section-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* FILTER & TOOLBAR */
+  .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn { font-family: var(--font-head); font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 6px 16px; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); border-radius: var(--radius); cursor: pointer; transition: all 0.18s; }
+  .filter-btn:hover { border-color: var(--accent-dim); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+  .btn-add { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 8px 20px; background: var(--accent); color: #000; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+  .btn-add:hover { background: #e8b31e; transform: translateY(-1px); }
+
+  /* GRID */
+  .loadout-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; }
+  .loadout-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; transition: all 0.2s; position: relative; }
+  .loadout-card:hover { background: var(--bg-card-hover); border-color: var(--border-accent); transform: translateY(-2px); }
+  .loadout-card.hidden { display: none; }
+
+  /* DELETE BUTTON */
+  .btn-delete { position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; background: rgba(224,82,82,0.15); border: 1px solid rgba(224,82,82,0.3); border-radius: 3px; color: var(--red); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: all 0.18s; z-index: 5; }
+  .loadout-card:hover .btn-delete { opacity: 1; }
+  .btn-delete:hover { background: rgba(224,82,82,0.3); }
+
+  /* CARD PARTS */
+  .card-header { padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; padding-right: 2.5rem; }
+  .card-weapon-type { font-family: var(--font-head); font-size: 11px; letter-spacing: 2px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+  .card-title { font-family: var(--font-head); font-size: 22px; font-weight: 900; color: var(--text-primary); line-height: 1.1; }
+  .tier-badge { font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 1px; padding: 4px 10px; border-radius: var(--radius); white-space: nowrap; }
+  .tier-S { background: rgba(212,160,23,0.2); color: var(--accent); border: 1px solid var(--accent-dim); }
+  .tier-A { background: rgba(61,220,132,0.12); color: var(--green); border: 1px solid var(--green-dim); }
+  .tier-B { background: rgba(91,155,213,0.12); color: var(--blue); border: 1px solid rgba(91,155,213,0.3); }
+  .card-visual { height: 80px; background: var(--bg-secondary); display: flex; align-items: center; padding: 0 1.25rem; }
+  .weapon-icon { font-size: 36px; opacity: 0.7; letter-spacing: 4px; }
+  .card-body { padding: 1rem 1.25rem; }
+  .attach-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+  .attach-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .attach-tag { font-size: 12px; padding: 3px 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 3px; color: var(--text-secondary); }
+  .attach-tag.highlight { background: rgba(212,160,23,0.08); border-color: rgba(212,160,23,0.25); color: var(--accent); }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .stat-mini { text-align: center; }
+  .stat-mini-val { font-family: var(--font-head); font-size: 17px; font-weight: 700; }
+  .stat-mini-key { font-size: 10px; letter-spacing: 0.5px; color: var(--text-muted); text-transform: uppercase; }
+  .card-footer { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-muted); }
+  .card-author { display: flex; align-items: center; gap: 6px; }
+  .author-dot { width: 22px; height: 22px; border-radius: 50%; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 11px; font-weight: 700; color: var(--accent); }
+
+  /* EMPTY STATE */
+  .empty-state { grid-column: 1/-1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 1rem; opacity: 0.4; }
+  .empty-state p { font-size: 15px; }
+
+  /* GUIDES */
+  .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .guide-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 1.25rem; transition: all 0.2s; }
+  .guide-card:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+  .guide-icon { font-size: 24px; margin-bottom: 0.75rem; }
+  .guide-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .guide-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  /* MODAL OVERLAY */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg-card); border: 1px solid var(--border-accent); border-radius: 8px; width: 90%; max-width: 640px; max-height: 90vh; overflow-y: auto; padding: 2rem; position: relative; }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); width: 28px; height: 28px; border-radius: 3px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ADD LOADOUT FORM MODAL */
+  .modal-title-form { font-family: var(--font-head); font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .modal-title-form span { color: var(--accent); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .form-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; color: var(--text-muted); }
+  .form-input, .form-select, .form-textarea {
+    background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius);
+    color: var(--text-primary); font-family: var(--font-body); font-size: 14px; padding: 8px 12px;
+    transition: border-color 0.2s; outline: none; width: 100%;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent-dim); }
+  .form-select { appearance: none; cursor: pointer; }
+  .form-textarea { min-height: 70px; resize: vertical; }
+
+  /* attachment slot rows */
+  .slots-section { margin-bottom: 12px; }
+  .slots-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+  .slot-row { display: grid; grid-template-columns: 130px 1fr; gap: 8px; margin-bottom: 6px; }
+  .slot-row input { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary); font-family: var(--font-body); font-size: 13px; padding: 6px 10px; outline: none; width: 100%; transition: border-color 0.2s; }
+  .slot-row input:focus { border-color: var(--accent-dim); }
+  .slot-key { color: var(--text-muted); font-size: 13px; display: flex; align-items: center; padding-left: 2px; }
+
+  .stat-inputs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+  .stat-input-group { display: flex; flex-direction: column; gap: 4px; }
+  .stat-input-group label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); text-align: center; }
+  .stat-input-group input { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary); font-family: var(--font-head); font-size: 18px; font-weight: 700; padding: 6px; text-align: center; outline: none; width: 100%; transition: border-color 0.2s; }
+  .stat-input-group input:focus { border-color: var(--accent-dim); }
+
+  .form-actions { display: flex; gap: 10px; margin-top: 1rem; }
+  .btn-primary { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 24px; background: var(--accent); color: #000; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.18s; flex: 1; }
+  .btn-primary:hover { background: #e8b31e; }
+  .btn-secondary { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 20px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.18s; }
+  .btn-secondary:hover { border-color: var(--red); color: var(--red); }
+
+  /* DETAIL MODAL */
+  .modal-type { font-family: var(--font-head); font-size: 12px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+  .modal-big-title { font-family: var(--font-head); font-size: 32px; font-weight: 900; color: var(--text-primary); margin-bottom: 1.5rem; }
+  .modal-section { margin-bottom: 1.5rem; }
+  .modal-section h3 { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .attach-full { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .attach-item { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; }
+  .attach-item-slot { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+  .attach-item-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .modal-note { background: rgba(212,160,23,0.07); border: 1px solid rgba(212,160,23,0.2); border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .modal-note strong { color: var(--accent); }
+
+  /* CONFIRM DIALOG */
+  .confirm-box { text-align: center; padding: 1rem; }
+  .confirm-box .ci { font-size: 40px; margin-bottom: 1rem; }
+  .confirm-box h3 { font-family: var(--font-head); font-size: 24px; font-weight: 900; color: var(--text-primary); margin-bottom: 0.5rem; }
+  .confirm-box p { color: var(--text-secondary); font-size: 14px; margin-bottom: 1.5rem; }
+  .confirm-box .card-name-preview { color: var(--accent); font-weight: 600; }
+  .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+  .btn-danger { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 24px; background: var(--red); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.18s; }
+  .btn-danger:hover { background: #c43f3f; }
+
+  /* NOTIF */
+  .notif { position: fixed; bottom: 2rem; right: 2rem; background: var(--bg-card); border: 1px solid var(--border-accent); border-radius: 6px; padding: 1rem 1.25rem; font-size: 14px; color: var(--text-primary); z-index: 300; transform: translateY(100px); opacity: 0; transition: all 0.3s; }
+  .notif.show { transform: translateY(0); opacity: 1; }
+  .notif-title { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: var(--green); margin-bottom: 2px; }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 13px; color: var(--text-muted); }
+  footer strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">LOADOUT<span>HUB</span></a>
+  <ul class="nav-links">
+    <li><a href="#loadouts">Loadouts</a></li>
+    <li><a href="#guides">Guides</a></li>
+  </ul>
+  <span class="nav-badge">ARENA BREAKOUT</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Community Weapon Database</div>
+  <h1>Master<br>Your <em>Arsenal</em></h1>
+  <p>Build, share, dan temukan loadout senjata terbaik dari komunitas gamer Arena Breakout Indonesia.</p>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num" id="stat-count">6</div><div class="stat-label">Loadout</div></div>
+    <div class="stat-item"><div class="stat-num">S+</div><div class="stat-label">Top Tier</div></div>
+    <div class="stat-item"><div class="stat-num">🔥</div><div class="stat-label">Meta</div></div>
+  </div>
+</div>
+
+<section id="loadouts">
+  <div class="section-header"><h2>Loadout Database</h2></div>
+  <div class="toolbar">
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">Semua</button>
+      <button class="filter-btn" data-filter="ar">Assault Rifle</button>
+      <button class="filter-btn" data-filter="smg">SMG</button>
+      <button class="filter-btn" data-filter="sniper">Sniper</button>
+      <button class="filter-btn" data-filter="shotgun">Shotgun</button>
+      <button class="filter-btn" data-filter="lmg">LMG</button>
+    </div>
+    <button class="btn-add" onclick="openAddModal()">+ Tambah Loadout</button>
+  </div>
+  <div class="loadout-grid" id="loadout-grid"></div>
+</section>
+
+<section id="guides">
+  <div class="section-header"><h2>Tips & Guides</h2></div>
+  <div class="guide-grid">
+    <div class="guide-card"><div class="guide-icon">🎯</div><div class="guide-title">Cara Baca Stat Senjata</div><div class="guide-desc">Pahami arti DMG, ACC, RPM, dan CTRL — 4 stat utama yang menentukan performa senjata di berbagai situasi.</div></div>
+    <div class="guide-card"><div class="guide-icon">🔧</div><div class="guide-title">Prioritas Attachment</div><div class="guide-desc">Bukan semua slot harus diisi mahal. Pelajari slot mana yang paling berpengaruh: muzzle, sight, dan stock.</div></div>
+    <div class="guide-card"><div class="guide-icon">💰</div><div class="guide-title">Build Budget vs Meta</div><div class="guide-desc">Budget ketat bukan berarti kalah. Ada build murah yang tetap bisa perform di Armory dan Northridge.</div></div>
+    <div class="guide-card"><div class="guide-icon">🗺️</div><div class="guide-title">Loadout per Map</div><div class="guide-desc">Farm map beda kebutuhan. CQC untuk Factory, mid-range untuk Valley, sniper untuk Armory outer ring.</div></div>
+  </div>
+</section>
+
+<footer><strong>LOADOUT HUB</strong> — Arena Breakout Indonesia Community &nbsp;·&nbsp; Bukan afiliasi resmi Tencent / Morefun Studios</footer>
+
+<!-- MODAL: Detail Loadout -->
+<div class="modal-overlay" id="modal-detail" onclick="closeOnBg(event,'modal-detail')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+    <div id="modal-detail-inner"></div>
+  </div>
+</div>
+
+<!-- MODAL: Tambah Loadout -->
+<div class="modal-overlay" id="modal-add" onclick="closeOnBg(event,'modal-add')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-add')">✕</button>
+    <div class="modal-title-form">Tambah <span>Loadout</span> Baru</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nama Loadout *</label>
+        <input class="form-input" id="f-name" placeholder="contoh: AK-74 Stealth">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username *</label>
+        <input class="form-input" id="f-author" placeholder="contoh: GunZ_ID">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Kategori Senjata *</label>
+        <select class="form-select" id="f-cat">
+          <option value="">Pilih...</option>
+          <option value="ar">Assault Rifle</option>
+          <option value="smg">SMG</option>
+          <option value="sniper">Sniper Rifle</option>
+          <option value="shotgun">Shotgun</option>
+          <option value="lmg">LMG</option>
+          <option value="pistol">Pistol</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tier</label>
+        <select class="form-select" id="f-tier">
+          <option value="S">S-Tier</option>
+          <option value="A" selected>A-Tier</option>
+          <option value="B">B-Tier</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Range / Situasi</label>
+      <input class="form-input" id="f-range" placeholder="contoh: CQC + Mid Range">
+    </div>
+
+    <div class="slots-section">
+      <div class="slots-label">Attachment (isi yang ada saja)</div>
+      <div class="slot-row"><span class="slot-key">Muzzle</span><input id="s-muzzle" placeholder="contoh: PBS-1 Suppressor"></div>
+      <div class="slot-row"><span class="slot-key">Barrel</span><input id="s-barrel" placeholder="contoh: 16' Standard Barrel"></div>
+      <div class="slot-row"><span class="slot-key">Handguard</span><input id="s-handguard" placeholder="contoh: Zenitco B-10M"></div>
+      <div class="slot-row"><span class="slot-key">Optic / Sight</span><input id="s-optic" placeholder="contoh: Elcan SpecterDR 1-4x"></div>
+      <div class="slot-row"><span class="slot-key">Laser</span><input id="s-laser" placeholder="contoh: ATPIAL-C"></div>
+      <div class="slot-row"><span class="slot-key">Stock</span><input id="s-stock" placeholder="contoh: Magpul CTR Stock"></div>
+      <div class="slot-row"><span class="slot-key">Grip / Foregrip</span><input id="s-grip" placeholder="contoh: Magpul AFG-2"></div>
+      <div class="slot-row"><span class="slot-key">Magazine</span><input id="s-mag" placeholder="contoh: PMAG 30rnd"></div>
+      <div class="slot-row"><span class="slot-key">Ammo</span><input id="s-ammo" placeholder="contoh: 5.56x45 M855A1"></div>
+    </div>
+
+    <div class="slots-label" style="margin-bottom:8px">Statistik (0–100 / RPM bebas)</div>
+    <div class="stat-inputs">
+      <div class="stat-input-group"><label>DMG</label><input id="st-dmg" type="number" min="0" max="100" placeholder="80"></div>
+      <div class="stat-input-group"><label>ACC</label><input id="st-acc" type="number" min="0" max="100" placeholder="75"></div>
+      <div class="stat-input-group"><label>RPM</label><input id="st-rpm" type="number" min="0" placeholder="700"></div>
+      <div class="stat-input-group"><label>CTRL</label><input id="st-ctrl" type="number" min="0" max="100" placeholder="70"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tips & Catatan</label>
+      <textarea class="form-textarea" id="f-tips" placeholder="Tips penggunaan, situasi terbaik, pasangan armor, dll..."></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-secondary" onclick="closeModal('modal-add')">Batal</button>
+      <button class="btn-primary" onclick="saveLoadout()">⚡ Simpan Loadout</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Konfirmasi Hapus -->
+<div class="modal-overlay" id="modal-confirm" onclick="closeOnBg(event,'modal-confirm')">
+  <div class="modal" style="max-width:400px">
+    <div class="confirm-box">
+      <div class="ci">🗑️</div>
+      <h3>Hapus Loadout?</h3>
+      <p>Loadout <span class="card-name-preview" id="confirm-name"></span> akan dihapus permanen dan tidak bisa dikembalikan.</p>
+      <div class="confirm-actions">
+        <button class="btn-secondary" onclick="closeModal('modal-confirm')">Batal</button>
+        <button class="btn-danger" onclick="confirmDelete()">Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIF -->
+<div class="notif" id="notif"><div class="notif-title" id="notif-title">✓ Berhasil!</div><div id="notif-msg">Loadout disimpan.</div></div>
+
+<script>
+// ─── DATA AWAL (template bawaan) ───
+const DEFAULT_LOADOUTS = [
+  {
+    id: 'tpl-1', title: 'M4A1 — Meta King', type: 'ar', typeLabel: 'Assault Rifle', tier: 'S',
+    author: 'GunZ_ID', range: 'CQC + Mid', icon: '🔫',
+    slots: [{slot:'Muzzle',name:'JP Enterprises Flash Hider'},{slot:'Barrel',name:'Daniel Defense 14.5"'},{slot:'Handguard',name:'BCM GUNFIGHTER MOD 3'},{slot:'Optic',name:'Elcan SpecterDR 1-4x'},{slot:'Laser',name:'ATPIAL-C (AN/PEQ-15A)'},{slot:'Stock',name:'Strike Industries PDW Stock'},{slot:'Grip',name:'Magpul MIAD'},{slot:'Magazine',name:'Magpul PMAG 30rnd'},{slot:'Ammo',name:'5.56x45 M855A1'}],
+    stats: {dmg:87, acc:74, rpm:720, ctrl:91},
+    tips: 'Gunakan ammo M855A1 untuk tembus Level 4 armor. Elcan cocok toggle 1x-4x, ideal CQC sampai medium. Laser ATPIAL aktifkan saat masuk ruangan sempit.',
+    likes: 234
+  },
+  {
+    id: 'tpl-2', title: 'MP5 — Rush Build', type: 'smg', typeLabel: 'SMG', tier: 'A',
+    author: 'RaidKing', range: 'CQC', icon: '🔫',
+    slots: [{slot:'Muzzle',name:'Surefire MB556K'},{slot:'Barrel',name:'MP5 Navy 8.9" Barrel'},{slot:'Handguard',name:'Midwest Industries Handguard'},{slot:'Optic',name:'Aimpoint Micro T-2'},{slot:'Stock',name:'MP5 Navy Fixed Stock'},{slot:'Grip',name:'Magpul AFG-2'},{slot:'Magazine',name:'MP5 30rnd'},{slot:'Ammo',name:'9x19 7N21 AP'}],
+    stats: {dmg:71, acc:82, rpm:800, ctrl:88},
+    tips: 'Build aggro rush. Masuk pintu dulu, tembak duluan. Aimpoint T-2 responsif dan minim parallax. Ammo 7N21 AP bisa tembus soft armor.',
+    likes: 178
+  },
+  {
+    id: 'tpl-3', title: 'SVD — Long Ranger', type: 'sniper', typeLabel: 'Sniper Rifle', tier: 'S',
+    author: 'SniperKu', range: 'Long Range', icon: '🎯',
+    slots: [{slot:'Optic',name:'PSO-1 4x24 Scope'},{slot:'Handguard',name:'Zenitco B-10M'},{slot:'Muzzle',name:'SVD Muzzle Brake'},{slot:'Bipod',name:'SVD Standard Bipod'},{slot:'Stock',name:'SVD Standard Stock'},{slot:'Magazine',name:'SVD 10rnd'},{slot:'Ammo',name:'7.62x54R SNB'}],
+    stats: {dmg:95, acc:93, rpm:420, ctrl:65},
+    tips: 'SVD bukan bolt-action — bisa follow-up shot cepat. Pakai bipod saat prone untuk zero recoil. SNB ammo sangat efektif terhadap armor tebal di jarak 200m+.',
+    likes: 312
+  },
+  {
+    id: 'tpl-4', title: 'AKM — Budget Beast', type: 'ar', typeLabel: 'Assault Rifle', tier: 'A',
+    author: 'BudgetJago', range: 'All Range', icon: '🔫',
+    slots: [{slot:'Muzzle',name:'PBS-1 Sound Suppressor'},{slot:'Optic',name:'Kobra Red Dot EKP-8'},{slot:'Stock',name:'Zhukov-S Folding Stock'},{slot:'Handguard',name:'Zenitco PT-1 Foregrip'},{slot:'Magazine',name:'AKM 30rnd Bakelite'},{slot:'Ammo',name:'7.62x39 BP'}],
+    stats: {dmg:89, acc:68, rpm:600, ctrl:72},
+    tips: 'Build murah tapi mematikan. PBS-1 suppressor bantu stealth farming. BP ammo cukup untuk Level 3 armor. Total harga sekitar 80-100k Koen.',
+    likes: 156
+  },
+  {
+    id: 'tpl-5', title: 'M870 — Room Clearer', type: 'shotgun', typeLabel: 'Shotgun', tier: 'B',
+    author: 'ShotgunHero', range: 'CQC Only', icon: '💥',
+    slots: [{slot:'Stock',name:'Mesa Tactical Urbino Stock'},{slot:'Optic',name:'Aimpoint PRO'},{slot:'Forend',name:'Mesa Tactical Forend w/ Rail'},{slot:'Light',name:'Streamlight TLR-1 HL'},{slot:'Shell Holder',name:'Mesa 6-Shell Side Saddle'},{slot:'Ammo',name:'12/70 AP-20 Flechette'}],
+    stats: {dmg:99, acc:45, rpm:130, ctrl:70},
+    tips: 'Shotgun keras di jarak 0-10m. Lebih dari itu mulai drop off parah. Ideal untuk factory indoor. Flechette ammo punya penetrasi lumayan untuk shotgun.',
+    likes: 98
+  },
+  {
+    id: 'tpl-6', title: 'RPK-16 — Suppression God', type: 'lmg', typeLabel: 'LMG', tier: 'A',
+    author: 'ZeroRecoil', range: 'Mid + Long', icon: '🔥',
+    slots: [{slot:'Optic',name:'ACOG TA648RMR 6x'},{slot:'Muzzle',name:'DTK-1 Muzzle Brake'},{slot:'Bipod',name:'RPK-16 Standard Bipod'},{slot:'Stock',name:'Zhukov-S Stock'},{slot:'Magazine',name:'RPK-16 95rnd Drum'},{slot:'Ammo',name:'5.45x39 7N39 Igolnik'}],
+    stats: {dmg:86, acc:79, rpm:550, ctrl:75},
+    tips: 'RPK paling kuat saat prone dengan bipod. 95rnd drum = suppression panjang. Igolnik ammo adalah salah satu 5.45 terbaik, tembus armor tinggi.',
+    likes: 201
+  }
+];
+
+// ─── STATE ───
+let loadouts = [];
+let currentFilter = 'all';
+let pendingDeleteId = null;
+
+// ─── LOAD / SAVE ke localStorage ───
+function saveToStorage() {
+  try { localStorage.setItem('loadout_hub_v2', JSON.stringify(loadouts)); } catch(e) {}
+}
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem('loadout_hub_v2');
+    if (raw) { loadouts = JSON.parse(raw); return; }
+  } catch(e) {}
+  loadouts = JSON.parse(JSON.stringify(DEFAULT_LOADOUTS));
+  saveToStorage();
+}
+
+// ─── STAT COLOR ───
+function statColor(key, val) {
+  if (key === 'rpm') return 'var(--text-primary)';
+  const n = Number(val);
+  if (n >= 85) return key === 'dmg' ? 'var(--red)' : 'var(--green)';
+  if (n >= 70) return 'var(--green)';
+  if (n >= 55) return 'var(--accent)';
+  return 'var(--red)';
+}
+
+// ─── RENDER CARD ───
+function renderCard(ld) {
+  const tierClass = `tier-${ld.tier}`;
+  const filledSlots = (ld.slots || []).filter(s => s.name && s.name.trim());
+  const topTags = filledSlots.slice(0, 4).map((s, i) =>
+    `<span class="attach-tag ${i < 2 ? 'highlight' : ''}">${s.name}</span>`).join('');
+
+  const div = document.createElement('div');
+  div.className = 'loadout-card';
+  div.dataset.type = ld.type;
+  div.dataset.id = ld.id;
+  div.innerHTML = `
+    <button class="btn-delete" title="Hapus loadout" onclick="askDelete(event,'${ld.id}','${escHtml(ld.title)}')">✕</button>
+    <div class="card-header" onclick="openDetail('${ld.id}')" style="cursor:pointer">
+      <div>
+        <div class="card-weapon-type">${ld.typeLabel}</div>
+        <div class="card-title">${escHtml(ld.title)}</div>
+      </div>
+      <span class="tier-badge ${tierClass}">${ld.tier}-TIER</span>
+    </div>
+    <div class="card-visual" onclick="openDetail('${ld.id}')" style="cursor:pointer">
+      <span class="weapon-icon">${ld.icon || '🔫'} ${ld.typeLabel}</span>
+    </div>
+    <div class="card-body" onclick="openDetail('${ld.id}')" style="cursor:pointer">
+      <div class="attach-label">Attachment Utama</div>
+      <div class="attach-tags">${topTags || '<span class="attach-tag">Tidak ada attachment</span>'}</div>
+      <div class="stats-row">
+        <div class="stat-mini"><div class="stat-mini-val" style="color:${statColor('dmg',ld.stats.dmg)}">${ld.stats.dmg||'—'}</div><div class="stat-mini-key">DMG</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="color:${statColor('acc',ld.stats.acc)}">${ld.stats.acc||'—'}</div><div class="stat-mini-key">ACC</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">${ld.stats.rpm||'—'}</div><div class="stat-mini-key">RPM</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="color:${statColor('ctrl',ld.stats.ctrl)}">${ld.stats.ctrl||'—'}</div><div class="stat-mini-key">CTRL</div></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="card-author">
+        <div class="author-dot">${(ld.author||'?').slice(0,2).toUpperCase()}</div>
+        ${escHtml(ld.author||'Anonim')}
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text-muted)">
+        <span>♥ ${ld.likes||0}</span>
+        <span>↑ ${escHtml(ld.range||'-')}</span>
+      </div>
+    </div>`;
+  return div;
+}
+
+function escHtml(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── RENDER ALL ───
+function renderGrid() {
+  const grid = document.getElementById('loadout-grid');
+  grid.innerHTML = '';
+  const visible = loadouts.filter(ld => currentFilter === 'all' || ld.type === currentFilter);
+  if (visible.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>Belum ada loadout di kategori ini.<br>Klik <strong>+ Tambah Loadout</strong> untuk mulai!</p></div>`;
+  } else {
+    visible.forEach(ld => grid.appendChild(renderCard(ld)));
+  }
+  document.getElementById('stat-count').textContent = loadouts.length;
+}
+
+// ─── FILTER ───
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    currentFilter = this.dataset.filter;
+    renderGrid();
+  });
+});
+
+// ─── MODAL HELPERS ───
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeOnBg(e, id) { if (e.target.id === id) closeModal(id); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') ['modal-detail','modal-add','modal-confirm'].forEach(closeModal);
+});
+
+// ─── ADD MODAL ───
+function openAddModal() {
+  ['f-name','f-author','f-range','f-tips','s-muzzle','s-barrel','s-handguard','s-optic','s-laser','s-stock','s-grip','s-mag','s-ammo','st-dmg','st-acc','st-rpm','st-ctrl']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('f-cat').value = '';
+  document.getElementById('f-tier').value = 'A';
+  openModal('modal-add');
+}
+
+const CAT_LABELS = { ar:'Assault Rifle', smg:'SMG', sniper:'Sniper Rifle', shotgun:'Shotgun', lmg:'LMG', pistol:'Pistol' };
+const CAT_ICONS  = { ar:'🔫', smg:'🔫', sniper:'🎯', shotgun:'💥', lmg:'🔥', pistol:'🔫' };
+
+function saveLoadout() {
+  const name   = document.getElementById('f-name').value.trim();
+  const author = document.getElementById('f-author').value.trim();
+  const cat    = document.getElementById('f-cat').value;
+  if (!name) { alert('Nama loadout wajib diisi!'); return; }
+  if (!cat)  { alert('Pilih kategori senjata dulu!'); return; }
+
+  const slots = [
+    {slot:'Muzzle',    name: document.getElementById('s-muzzle').value.trim()},
+    {slot:'Barrel',    name: document.getElementById('s-barrel').value.trim()},
+    {slot:'Handguard', name: document.getElementById('s-handguard').value.trim()},
+    {slot:'Optic',     name: document.getElementById('s-optic').value.trim()},
+    {slot:'Laser',     name: document.getElementById('s-laser').value.trim()},
+    {slot:'Stock',     name: document.getElementById('s-stock').value.trim()},
+    {slot:'Grip',      name: document.getElementById('s-grip').value.trim()},
+    {slot:'Magazine',  name: document.getElementById('s-mag').value.trim()},
+    {slot:'Ammo',      name: document.getElementById('s-ammo').value.trim()},
+  ].filter(s => s.name);
+
+  const newLd = {
+    id: 'user-' + Date.now(),
+    title: name,
+    type: cat,
+    typeLabel: CAT_LABELS[cat] || cat,
+    tier: document.getElementById('f-tier').value,
+    author: author || 'Anonim',
+    range: document.getElementById('f-range').value.trim() || '-',
+    icon: CAT_ICONS[cat] || '🔫',
+    slots: slots,
+    stats: {
+      dmg:  parseInt(document.getElementById('st-dmg').value)  || 0,
+      acc:  parseInt(document.getElementById('st-acc').value)  || 0,
+      rpm:  parseInt(document.getElementById('st-rpm').value)  || 0,
+      ctrl: parseInt(document.getElementById('st-ctrl').value) || 0,
+    },
+    tips: document.getElementById('f-tips').value.trim(),
+    likes: 0
+  };
+
+  loadouts.unshift(newLd);
+  saveToStorage();
+  closeModal('modal-add');
+  currentFilter = 'all';
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-filter="all"]').classList.add('active');
+  renderGrid();
+  showNotif('✓ Loadout Ditambahkan!', `"${name}" berhasil disimpan.`);
+}
+
+// ─── DELETE ───
+function askDelete(e, id, title) {
+  e.stopPropagation();
+  pendingDeleteId = id;
+  document.getElementById('confirm-name').textContent = '"' + title + '"';
+  openModal('modal-confirm');
+}
+function confirmDelete() {
+  if (!pendingDeleteId) return;
+  loadouts = loadouts.filter(ld => ld.id !== pendingDeleteId);
+  saveToStorage();
+  renderGrid();
+  closeModal('modal-confirm');
+  showNotif('🗑️ Dihapus', 'Loadout berhasil dihapus.', 'var(--red)');
+  pendingDeleteId = null;
+}
+
+// ─── DETAIL MODAL ───
+function openDetail(id) {
+  const ld = loadouts.find(l => l.id === id);
+  if (!ld) return;
+  const tierClass = `tier-${ld.tier}`;
+  const filled = (ld.slots||[]).filter(s => s.name);
+  const slotsHtml = filled.length
+    ? filled.map(s => `<div class="attach-item"><div class="attach-item-slot">${escHtml(s.slot)}</div><div class="attach-item-name">${escHtml(s.name)}</div></div>`).join('')
+    : '<p style="color:var(--text-muted);font-size:13px">Tidak ada attachment yang diisi.</p>';
+
+  document.getElementById('modal-detail-inner').innerHTML = `
+    <div class="modal-type">${escHtml(ld.typeLabel)}</div>
+    <div class="modal-big-title">${escHtml(ld.title)} <span class="tier-badge ${tierClass}">${ld.tier}-TIER</span></div>
+    <div class="modal-section">
+      <h3>Attachment Lengkap</h3>
+      <div class="attach-full">${slotsHtml}</div>
+    </div>
+    <div class="modal-section">
+      <h3>Statistik</h3>
+      <div class="stats-row" style="border:none;padding:0">
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px;color:${statColor('dmg',ld.stats.dmg)}">${ld.stats.dmg||'—'}</div><div class="stat-mini-key">Damage</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px;color:${statColor('acc',ld.stats.acc)}">${ld.stats.acc||'—'}</div><div class="stat-mini-key">Accuracy</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px">${ld.stats.rpm||'—'}</div><div class="stat-mini-key">RPM</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px;color:${statColor('ctrl',ld.stats.ctrl)}">${ld.stats.ctrl||'—'}</div><div class="stat-mini-key">Control</div></div>
+      </div>
+    </div>
+    ${ld.tips ? `<div class="modal-section"><h3>Tips & Catatan</h3><div class="modal-note"><strong>Tips:</strong> ${escHtml(ld.tips)}</div></div>` : ''}
+    <div style="font-size:13px;color:var(--text-muted);margin-top:0.5rem">Oleh: ${escHtml(ld.author||'Anonim')} &nbsp;·&nbsp; ♥ ${ld.likes||0} &nbsp;·&nbsp; ${escHtml(ld.range||'-')}`;
+  openModal('modal-detail');
+}
+
+// ─── NOTIF ───
+function showNotif(title, msg, color) {
+  const n = document.getElementById('notif');
+  document.getElementById('notif-title').textContent = title;
+  document.getElementById('notif-title').style.color = color || 'var(--green)';
+  document.getElementById('notif-msg').textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 3200);
+}
+
+// ─── INIT ───
+loadFromStorage();
+renderGrid();
+</script>
+</body>
+</html>
+html
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOADOUT HUB — Arena Breakout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg-primary: #0a0c0e; --bg-secondary: #111417; --bg-card: #161a1f; --bg-card-hover: #1c2128;
+    --accent: #d4a017; --accent-dim: #8a6a10; --green: #3ddc84; --green-dim: #1e6b3f;
+    --red: #e05252; --blue: #5b9bd5; --border: rgba(255,255,255,0.07);
+    --border-accent: rgba(212,160,23,0.4); --text-primary: #e8e4dc;
+    --text-secondary: #7a8294; --text-muted: #4a5060;
+    --font-head: 'Barlow Condensed', sans-serif; --font-body: 'Barlow', sans-serif; --radius: 4px;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-body); font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(10,12,14,0.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .nav-logo { font-family: var(--font-head); font-size: 22px; font-weight: 900; letter-spacing: 2px; color: var(--accent); text-decoration: none; }
+  .nav-logo span { color: var(--text-primary); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-family: var(--font-head); font-size: 14px; letter-spacing: 1px; font-weight: 600; color: var(--text-secondary); text-decoration: none; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-badge { background: var(--accent); color: #000; font-family: var(--font-head); font-size: 11px; font-weight: 700; letter-spacing: 1px; padding: 4px 10px; border-radius: var(--radius); }
+
+  /* HERO */
+  .hero { position: relative; padding: 5rem 2rem 4rem; text-align: center; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(212,160,23,0.12) 0%, transparent 70%), repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.025) 40px), repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.025) 40px); pointer-events: none; }
+  .hero-tag { display: inline-block; font-family: var(--font-head); font-size: 12px; letter-spacing: 3px; font-weight: 600; color: var(--accent); text-transform: uppercase; border: 1px solid var(--border-accent); padding: 4px 14px; border-radius: var(--radius); margin-bottom: 1.5rem; }
+  .hero h1 { font-family: var(--font-head); font-size: clamp(48px, 8vw, 88px); font-weight: 900; line-height: 0.9; letter-spacing: -1px; text-transform: uppercase; color: var(--text-primary); margin-bottom: 1.5rem; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p { font-size: 17px; color: var(--text-secondary); max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.7; }
+  .hero-stats { display: flex; justify-content: center; gap: 3rem; }
+  .stat-num { font-family: var(--font-head); font-size: 32px; font-weight: 900; color: var(--accent); line-height: 1; }
+  .stat-label { font-size: 12px; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+
+  /* SECTION */
+  section { padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
+  .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+  .section-header h2 { font-family: var(--font-head); font-size: 28px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+  .section-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* FILTER & TOOLBAR */
+  .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn { font-family: var(--font-head); font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 6px 16px; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); border-radius: var(--radius); cursor: pointer; transition: all 0.18s; }
+  .filter-btn:hover { border-color: var(--accent-dim); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+  .btn-add { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 8px 20px; background: var(--accent); color: #000; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+  .btn-add:hover { background: #e8b31e; transform: translateY(-1px); }
+
+  /* GRID */
+  .loadout-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; }
+  .loadout-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; transition: all 0.2s; position: relative; }
+  .loadout-card:hover { background: var(--bg-card-hover); border-color: var(--border-accent); transform: translateY(-2px); }
+  .loadout-card.hidden { display: none; }
+
+  /* DELETE BUTTON */
+  .btn-delete { position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; background: rgba(224,82,82,0.15); border: 1px solid rgba(224,82,82,0.3); border-radius: 3px; color: var(--red); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: all 0.18s; z-index: 5; }
+  .loadout-card:hover .btn-delete { opacity: 1; }
+  .btn-delete:hover { background: rgba(224,82,82,0.3); }
+
+  /* CARD PARTS */
+  .card-header { padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; padding-right: 2.5rem; }
+  .card-weapon-type { font-family: var(--font-head); font-size: 11px; letter-spacing: 2px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+  .card-title { font-family: var(--font-head); font-size: 22px; font-weight: 900; color: var(--text-primary); line-height: 1.1; }
+  .tier-badge { font-family: var(--font-head); font-size: 13px; font-weight: 700; letter-spacing: 1px; padding: 4px 10px; border-radius: var(--radius); white-space: nowrap; }
+  .tier-S { background: rgba(212,160,23,0.2); color: var(--accent); border: 1px solid var(--accent-dim); }
+  .tier-A { background: rgba(61,220,132,0.12); color: var(--green); border: 1px solid var(--green-dim); }
+  .tier-B { background: rgba(91,155,213,0.12); color: var(--blue); border: 1px solid rgba(91,155,213,0.3); }
+  .card-visual { height: 80px; background: var(--bg-secondary); display: flex; align-items: center; padding: 0 1.25rem; }
+  .weapon-icon { font-size: 36px; opacity: 0.7; letter-spacing: 4px; }
+  .card-body { padding: 1rem 1.25rem; }
+  .attach-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+  .attach-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .attach-tag { font-size: 12px; padding: 3px 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 3px; color: var(--text-secondary); }
+  .attach-tag.highlight { background: rgba(212,160,23,0.08); border-color: rgba(212,160,23,0.25); color: var(--accent); }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .stat-mini { text-align: center; }
+  .stat-mini-val { font-family: var(--font-head); font-size: 17px; font-weight: 700; }
+  .stat-mini-key { font-size: 10px; letter-spacing: 0.5px; color: var(--text-muted); text-transform: uppercase; }
+  .card-footer { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-muted); }
+  .card-author { display: flex; align-items: center; gap: 6px; }
+  .author-dot { width: 22px; height: 22px; border-radius: 50%; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 11px; font-weight: 700; color: var(--accent); }
+
+  /* EMPTY STATE */
+  .empty-state { grid-column: 1/-1; text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 1rem; opacity: 0.4; }
+  .empty-state p { font-size: 15px; }
+
+  /* GUIDES */
+  .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .guide-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 1.25rem; transition: all 0.2s; }
+  .guide-card:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+  .guide-icon { font-size: 24px; margin-bottom: 0.75rem; }
+  .guide-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .guide-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  /* MODAL OVERLAY */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--bg-card); border: 1px solid var(--border-accent); border-radius: 8px; width: 90%; max-width: 640px; max-height: 90vh; overflow-y: auto; padding: 2rem; position: relative; }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); width: 28px; height: 28px; border-radius: 3px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ADD LOADOUT FORM MODAL */
+  .modal-title-form { font-family: var(--font-head); font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .modal-title-form span { color: var(--accent); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .form-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; color: var(--text-muted); }
+  .form-input, .form-select, .form-textarea {
+    background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius);
+    color: var(--text-primary); font-family: var(--font-body); font-size: 14px; padding: 8px 12px;
+    transition: border-color 0.2s; outline: none; width: 100%;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent-dim); }
+  .form-select { appearance: none; cursor: pointer; }
+  .form-textarea { min-height: 70px; resize: vertical; }
+
+  /* attachment slot rows */
+  .slots-section { margin-bottom: 12px; }
+  .slots-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+  .slot-row { display: grid; grid-template-columns: 130px 1fr; gap: 8px; margin-bottom: 6px; }
+  .slot-row input { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary); font-family: var(--font-body); font-size: 13px; padding: 6px 10px; outline: none; width: 100%; transition: border-color 0.2s; }
+  .slot-row input:focus { border-color: var(--accent-dim); }
+  .slot-key { color: var(--text-muted); font-size: 13px; display: flex; align-items: center; padding-left: 2px; }
+
+  .stat-inputs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+  .stat-input-group { display: flex; flex-direction: column; gap: 4px; }
+  .stat-input-group label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); text-align: center; }
+  .stat-input-group input { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary); font-family: var(--font-head); font-size: 18px; font-weight: 700; padding: 6px; text-align: center; outline: none; width: 100%; transition: border-color 0.2s; }
+  .stat-input-group input:focus { border-color: var(--accent-dim); }
+
+  .form-actions { display: flex; gap: 10px; margin-top: 1rem; }
+  .btn-primary { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 24px; background: var(--accent); color: #000; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.18s; flex: 1; }
+  .btn-primary:hover { background: #e8b31e; }
+  .btn-secondary { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 20px; background: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.18s; }
+  .btn-secondary:hover { border-color: var(--red); color: var(--red); }
+
+  /* DETAIL MODAL */
+  .modal-type { font-family: var(--font-head); font-size: 12px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+  .modal-big-title { font-family: var(--font-head); font-size: 32px; font-weight: 900; color: var(--text-primary); margin-bottom: 1.5rem; }
+  .modal-section { margin-bottom: 1.5rem; }
+  .modal-section h3 { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .attach-full { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .attach-item { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; }
+  .attach-item-slot { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+  .attach-item-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .modal-note { background: rgba(212,160,23,0.07); border: 1px solid rgba(212,160,23,0.2); border-radius: var(--radius); padding: 0.75rem 1rem; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+  .modal-note strong { color: var(--accent); }
+
+  /* CONFIRM DIALOG */
+  .confirm-box { text-align: center; padding: 1rem; }
+  .confirm-box .ci { font-size: 40px; margin-bottom: 1rem; }
+  .confirm-box h3 { font-family: var(--font-head); font-size: 24px; font-weight: 900; color: var(--text-primary); margin-bottom: 0.5rem; }
+  .confirm-box p { color: var(--text-secondary); font-size: 14px; margin-bottom: 1.5rem; }
+  .confirm-box .card-name-preview { color: var(--accent); font-weight: 600; }
+  .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+  .btn-danger { font-family: var(--font-head); font-size: 15px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 10px 24px; background: var(--red); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; transition: all 0.18s; }
+  .btn-danger:hover { background: #c43f3f; }
+
+  /* NOTIF */
+  .notif { position: fixed; bottom: 2rem; right: 2rem; background: var(--bg-card); border: 1px solid var(--border-accent); border-radius: 6px; padding: 1rem 1.25rem; font-size: 14px; color: var(--text-primary); z-index: 300; transform: translateY(100px); opacity: 0; transition: all 0.3s; }
+  .notif.show { transform: translateY(0); opacity: 1; }
+  .notif-title { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: var(--green); margin-bottom: 2px; }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 13px; color: var(--text-muted); }
+  footer strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">LOADOUT<span>HUB</span></a>
+  <ul class="nav-links">
+    <li><a href="#loadouts">Loadouts</a></li>
+    <li><a href="#guides">Guides</a></li>
+  </ul>
+  <span class="nav-badge">ARENA BREAKOUT</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">Community Weapon Database</div>
+  <h1>Master<br>Your <em>Arsenal</em></h1>
+  <p>Build, share, dan temukan loadout senjata terbaik dari komunitas platform Tiktok Anaxa..</p>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num" id="stat-count">6</div><div class="stat-label">Loadout</div></div>
+    <div class="stat-item"><div class="stat-num">S+</div><div class="stat-label">Top Tier</div></div>
+    <div class="stat-item"><div class="stat-num">🔥</div><div class="stat-label">Meta</div></div>
+  </div>
+</div>
+
+<section id="loadouts">
+  <div class="section-header"><h2>Loadout Database</h2></div>
+  <div class="toolbar">
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">Semua</button>
+      <button class="filter-btn" data-filter="ar">Assault Rifle</button>
+      <button class="filter-btn" data-filter="smg">SMG</button>
+      <button class="filter-btn" data-filter="sniper">Sniper</button>
+      <button class="filter-btn" data-filter="shotgun">Shotgun</button>
+      <button class="filter-btn" data-filter="lmg">LMG</button>
+    </div>
+    <button class="btn-add" onclick="openAddModal()">+ Tambah Loadout</button>
+  </div>
+  <div class="loadout-grid" id="loadout-grid"></div>
+</section>
+
+<section id="guides">
+  <div class="section-header"><h2>Tips & Guides</h2></div>
+  <div class="guide-grid">
+    <div class="guide-card"><div class="guide-icon">🎯</div><div class="guide-title">Cara Baca Stat Senjata</div><div class="guide-desc">Pahami arti DMG, ACC, RPM, dan CTRL — 4 stat utama yang menentukan performa senjata di berbagai situasi.</div></div>
+    <div class="guide-card"><div class="guide-icon">🔧</div><div class="guide-title">Prioritas Attachment</div><div class="guide-desc">Bukan semua slot harus diisi mahal. Pelajari slot mana yang paling berpengaruh: muzzle, sight, dan stock.</div></div>
+    <div class="guide-card"><div class="guide-icon">💰</div><div class="guide-title">Build Budget vs Meta</div><div class="guide-desc">Budget ketat bukan berarti kalah. Ada build murah yang tetap bisa perform di Armory dan Northridge.</div></div>
+    <div class="guide-card"><div class="guide-icon">🗺️</div><div class="guide-title">Loadout per Map</div><div class="guide-desc">Farm map beda kebutuhan. CQC untuk Factory, mid-range untuk Valley, sniper untuk Armory outer ring.</div></div>
+  </div>
+</section>
+
+<footer><strong>LOADOUT HUB</strong> — Garena Delta Force Indonesia Community &nbsp;·&nbsp; Bukan afiliasi resmi Tencent / Morefun Studios</footer>
+
+<!-- MODAL: Detail Loadout -->
+<div class="modal-overlay" id="modal-detail" onclick="closeOnBg(event,'modal-detail')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+    <div id="modal-detail-inner"></div>
+  </div>
+</div>
+
+<!-- MODAL: Tambah Loadout -->
+<div class="modal-overlay" id="modal-add" onclick="closeOnBg(event,'modal-add')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-add')">✕</button>
+    <div class="modal-title-form">Tambah <span>Loadout</span> Baru</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nama Loadout *</label>
+        <input class="form-input" id="f-name" placeholder="contoh: AK-74 Stealth">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username *</label>
+        <input class="form-input" id="f-author" placeholder="contoh: GunZ_ID">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Kategori Senjata *</label>
+        <select class="form-select" id="f-cat">
+          <option value="">Pilih...</option>
+          <option value="ar">Assault Rifle</option>
+          <option value="smg">SMG</option>
+          <option value="sniper">Sniper Rifle</option>
+          <option value="shotgun">Shotgun</option>
+          <option value="lmg">LMG</option>
+          <option value="pistol">Pistol</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tier</label>
+        <select class="form-select" id="f-tier">
+          <option value="S">S-Tier</option>
+          <option value="A" selected>A-Tier</option>
+          <option value="B">B-Tier</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Range / Situasi</label>
+      <input class="form-input" id="f-range" placeholder="contoh: CQC + Mid Range">
+    </div>
+
+    <div class="slots-section">
+      <div class="slots-label">Attachment (isi yang ada saja)</div>
+      <div class="slot-row"><span class="slot-key">Muzzle</span><input id="s-muzzle" placeholder="contoh: PBS-1 Suppressor"></div>
+      <div class="slot-row"><span class="slot-key">Barrel</span><input id="s-barrel" placeholder="contoh: 16' Standard Barrel"></div>
+      <div class="slot-row"><span class="slot-key">Handguard</span><input id="s-handguard" placeholder="contoh: Zenitco B-10M"></div>
+      <div class="slot-row"><span class="slot-key">Optic / Sight</span><input id="s-optic" placeholder="contoh: Elcan SpecterDR 1-4x"></div>
+      <div class="slot-row"><span class="slot-key">Laser</span><input id="s-laser" placeholder="contoh: ATPIAL-C"></div>
+      <div class="slot-row"><span class="slot-key">Stock</span><input id="s-stock" placeholder="contoh: Magpul CTR Stock"></div>
+      <div class="slot-row"><span class="slot-key">Grip / Foregrip</span><input id="s-grip" placeholder="contoh: Magpul AFG-2"></div>
+      <div class="slot-row"><span class="slot-key">Magazine</span><input id="s-mag" placeholder="contoh: PMAG 30rnd"></div>
+      <div class="slot-row"><span class="slot-key">Ammo</span><input id="s-ammo" placeholder="contoh: 5.56x45 M855A1"></div>
+    </div>
+
+    <div class="slots-label" style="margin-bottom:8px">Statistik (0–100 / RPM bebas)</div>
+    <div class="stat-inputs">
+      <div class="stat-input-group"><label>DMG</label><input id="st-dmg" type="number" min="0" max="100" placeholder="80"></div>
+      <div class="stat-input-group"><label>ACC</label><input id="st-acc" type="number" min="0" max="100" placeholder="75"></div>
+      <div class="stat-input-group"><label>RPM</label><input id="st-rpm" type="number" min="0" placeholder="700"></div>
+      <div class="stat-input-group"><label>CTRL</label><input id="st-ctrl" type="number" min="0" max="100" placeholder="70"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tips & Catatan</label>
+      <textarea class="form-textarea" id="f-tips" placeholder="Tips penggunaan, situasi terbaik, pasangan armor, dll..."></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-secondary" onclick="closeModal('modal-add')">Batal</button>
+      <button class="btn-primary" onclick="saveLoadout()">⚡ Simpan Loadout</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Konfirmasi Hapus -->
+<div class="modal-overlay" id="modal-confirm" onclick="closeOnBg(event,'modal-confirm')">
+  <div class="modal" style="max-width:400px">
+    <div class="confirm-box">
+      <div class="ci">🗑️</div>
+      <h3>Hapus Loadout?</h3>
+      <p>Loadout <span class="card-name-preview" id="confirm-name"></span> akan dihapus permanen dan tidak bisa dikembalikan.</p>
+      <div class="confirm-actions">
+        <button class="btn-secondary" onclick="closeModal('modal-confirm')">Batal</button>
+        <button class="btn-danger" onclick="confirmDelete()">Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIF -->
+<div class="notif" id="notif"><div class="notif-title" id="notif-title">✓ Berhasil!</div><div id="notif-msg">Loadout disimpan.</div></div>
+
+<script>
+// ─── DATA AWAL (template bawaan) ───
+const DEFAULT_LOADOUTS = [
+  {
+    id: 'tpl-1', title: 'M4A1 — Meta King', type: 'ar', typeLabel: 'Assault Rifle', tier: 'S',
+    author: 'GunZ_ID', range: 'CQC + Mid', icon: '🔫',
+    slots: [{slot:'Muzzle',name:'JP Enterprises Flash Hider'},{slot:'Barrel',name:'Daniel Defense 14.5"'},{slot:'Handguard',name:'BCM GUNFIGHTER MOD 3'},{slot:'Optic',name:'Elcan SpecterDR 1-4x'},{slot:'Laser',name:'ATPIAL-C (AN/PEQ-15A)'},{slot:'Stock',name:'Strike Industries PDW Stock'},{slot:'Grip',name:'Magpul MIAD'},{slot:'Magazine',name:'Magpul PMAG 30rnd'},{slot:'Ammo',name:'5.56x45 M855A1'}],
+    stats: {dmg:87, acc:74, rpm:720, ctrl:91},
+    tips: 'Gunakan ammo M855A1 untuk tembus Level 4 armor. Elcan cocok toggle 1x-4x, ideal CQC sampai medium. Laser ATPIAL aktifkan saat masuk ruangan sempit.',
+    likes: 234
+  },
+  {
+    id: 'tpl-2', title: 'MP5 — Rush Build', type: 'smg', typeLabel: 'SMG', tier: 'A',
+    author: 'RaidKing', range: 'CQC', icon: '🔫',
+    slots: [{slot:'Muzzle',name:'Surefire MB556K'},{slot:'Barrel',name:'MP5 Navy 8.9" Barrel'},{slot:'Handguard',name:'Midwest Industries Handguard'},{slot:'Optic',name:'Aimpoint Micro T-2'},{slot:'Stock',name:'MP5 Navy Fixed Stock'},{slot:'Grip',name:'Magpul AFG-2'},{slot:'Magazine',name:'MP5 30rnd'},{slot:'Ammo',name:'9x19 7N21 AP'}],
+    stats: {dmg:71, acc:82, rpm:800, ctrl:88},
+    tips: 'Build aggro rush. Masuk pintu dulu, tembak duluan. Aimpoint T-2 responsif dan minim parallax. Ammo 7N21 AP bisa tembus soft armor.',
+    likes: 178
+  },
+  {
+    id: 'tpl-3', title: 'SVD — Long Ranger', type: 'sniper', typeLabel: 'Sniper Rifle', tier: 'S',
+    author: 'SniperKu', range: 'Long Range', icon: '🎯',
+    slots: [{slot:'Optic',name:'PSO-1 4x24 Scope'},{slot:'Handguard',name:'Zenitco B-10M'},{slot:'Muzzle',name:'SVD Muzzle Brake'},{slot:'Bipod',name:'SVD Standard Bipod'},{slot:'Stock',name:'SVD Standard Stock'},{slot:'Magazine',name:'SVD 10rnd'},{slot:'Ammo',name:'7.62x54R SNB'}],
+    stats: {dmg:95, acc:93, rpm:420, ctrl:65},
+    tips: 'SVD bukan bolt-action — bisa follow-up shot cepat. Pakai bipod saat prone untuk zero recoil. SNB ammo sangat efektif terhadap armor tebal di jarak 200m+.',
+    likes: 312
+  },
+  {
+    id: 'tpl-4', title: 'AKM — Budget Beast', type: 'ar', typeLabel: 'Assault Rifle', tier: 'A',
+    author: 'BudgetJago', range: 'All Range', icon: '🔫',
+    slots: [{slot:'Muzzle',name:'PBS-1 Sound Suppressor'},{slot:'Optic',name:'Kobra Red Dot EKP-8'},{slot:'Stock',name:'Zhukov-S Folding Stock'},{slot:'Handguard',name:'Zenitco PT-1 Foregrip'},{slot:'Magazine',name:'AKM 30rnd Bakelite'},{slot:'Ammo',name:'7.62x39 BP'}],
+    stats: {dmg:89, acc:68, rpm:600, ctrl:72},
+    tips: 'Build murah tapi mematikan. PBS-1 suppressor bantu stealth farming. BP ammo cukup untuk Level 3 armor. Total harga sekitar 80-100k Koen.',
+    likes: 156
+  },
+  {
+    id: 'tpl-5', title: 'M870 — Room Clearer', type: 'shotgun', typeLabel: 'Shotgun', tier: 'B',
+    author: 'ShotgunHero', range: 'CQC Only', icon: '💥',
+    slots: [{slot:'Stock',name:'Mesa Tactical Urbino Stock'},{slot:'Optic',name:'Aimpoint PRO'},{slot:'Forend',name:'Mesa Tactical Forend w/ Rail'},{slot:'Light',name:'Streamlight TLR-1 HL'},{slot:'Shell Holder',name:'Mesa 6-Shell Side Saddle'},{slot:'Ammo',name:'12/70 AP-20 Flechette'}],
+    stats: {dmg:99, acc:45, rpm:130, ctrl:70},
+    tips: 'Shotgun keras di jarak 0-10m. Lebih dari itu mulai drop off parah. Ideal untuk factory indoor. Flechette ammo punya penetrasi lumayan untuk shotgun.',
+    likes: 98
+  },
+  {
+    id: 'tpl-6', title: 'RPK-16 — Suppression God', type: 'lmg', typeLabel: 'LMG', tier: 'A',
+    author: 'ZeroRecoil', range: 'Mid + Long', icon: '🔥',
+    slots: [{slot:'Optic',name:'ACOG TA648RMR 6x'},{slot:'Muzzle',name:'DTK-1 Muzzle Brake'},{slot:'Bipod',name:'RPK-16 Standard Bipod'},{slot:'Stock',name:'Zhukov-S Stock'},{slot:'Magazine',name:'RPK-16 95rnd Drum'},{slot:'Ammo',name:'5.45x39 7N39 Igolnik'}],
+    stats: {dmg:86, acc:79, rpm:550, ctrl:75},
+    tips: 'RPK paling kuat saat prone dengan bipod. 95rnd drum = suppression panjang. Igolnik ammo adalah salah satu 5.45 terbaik, tembus armor tinggi.',
+    likes: 201
+  }
+];
+
+// ─── STATE ───
+let loadouts = [];
+let currentFilter = 'all';
+let pendingDeleteId = null;
+
+// ─── LOAD / SAVE ke localStorage ───
+function saveToStorage() {
+  try { localStorage.setItem('loadout_hub_v2', JSON.stringify(loadouts)); } catch(e) {}
+}
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem('loadout_hub_v2');
+    if (raw) { loadouts = JSON.parse(raw); return; }
+  } catch(e) {}
+  loadouts = JSON.parse(JSON.stringify(DEFAULT_LOADOUTS));
+  saveToStorage();
+}
+
+// ─── STAT COLOR ───
+function statColor(key, val) {
+  if (key === 'rpm') return 'var(--text-primary)';
+  const n = Number(val);
+  if (n >= 85) return key === 'dmg' ? 'var(--red)' : 'var(--green)';
+  if (n >= 70) return 'var(--green)';
+  if (n >= 55) return 'var(--accent)';
+  return 'var(--red)';
+}
+
+// ─── RENDER CARD ───
+function renderCard(ld) {
+  const tierClass = `tier-${ld.tier}`;
+  const filledSlots = (ld.slots || []).filter(s => s.name && s.name.trim());
+  const topTags = filledSlots.slice(0, 4).map((s, i) =>
+    `<span class="attach-tag ${i < 2 ? 'highlight' : ''}">${s.name}</span>`).join('');
+
+  const div = document.createElement('div');
+  div.className = 'loadout-card';
+  div.dataset.type = ld.type;
+  div.dataset.id = ld.id;
+  div.innerHTML = `
+    <button class="btn-delete" title="Hapus loadout" onclick="askDelete(event,'${ld.id}','${escHtml(ld.title)}')">✕</button>
+    <div class="card-header" onclick="openDetail('${ld.id}')" style="cursor:pointer">
+      <div>
+        <div class="card-weapon-type">${ld.typeLabel}</div>
+        <div class="card-title">${escHtml(ld.title)}</div>
+      </div>
+      <span class="tier-badge ${tierClass}">${ld.tier}-TIER</span>
+    </div>
+    <div class="card-visual" onclick="openDetail('${ld.id}')" style="cursor:pointer">
+      <span class="weapon-icon">${ld.icon || '🔫'} ${ld.typeLabel}</span>
+    </div>
+    <div class="card-body" onclick="openDetail('${ld.id}')" style="cursor:pointer">
+      <div class="attach-label">Attachment Utama</div>
+      <div class="attach-tags">${topTags || '<span class="attach-tag">Tidak ada attachment</span>'}</div>
+      <div class="stats-row">
+        <div class="stat-mini"><div class="stat-mini-val" style="color:${statColor('dmg',ld.stats.dmg)}">${ld.stats.dmg||'—'}</div><div class="stat-mini-key">DMG</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="color:${statColor('acc',ld.stats.acc)}">${ld.stats.acc||'—'}</div><div class="stat-mini-key">ACC</div></div>
+        <div class="stat-mini"><div class="stat-mini-val">${ld.stats.rpm||'—'}</div><div class="stat-mini-key">RPM</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="color:${statColor('ctrl',ld.stats.ctrl)}">${ld.stats.ctrl||'—'}</div><div class="stat-mini-key">CTRL</div></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="card-author">
+        <div class="author-dot">${(ld.author||'?').slice(0,2).toUpperCase()}</div>
+        ${escHtml(ld.author||'Anonim')}
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text-muted)">
+        <span>♥ ${ld.likes||0}</span>
+        <span>↑ ${escHtml(ld.range||'-')}</span>
+      </div>
+    </div>`;
+  return div;
+}
+
+function escHtml(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── RENDER ALL ───
+function renderGrid() {
+  const grid = document.getElementById('loadout-grid');
+  grid.innerHTML = '';
+  const visible = loadouts.filter(ld => currentFilter === 'all' || ld.type === currentFilter);
+  if (visible.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>Belum ada loadout di kategori ini.<br>Klik <strong>+ Tambah Loadout</strong> untuk mulai!</p></div>`;
+  } else {
+    visible.forEach(ld => grid.appendChild(renderCard(ld)));
+  }
+  document.getElementById('stat-count').textContent = loadouts.length;
+}
+
+// ─── FILTER ───
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    currentFilter = this.dataset.filter;
+    renderGrid();
+  });
+});
+
+// ─── MODAL HELPERS ───
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeOnBg(e, id) { if (e.target.id === id) closeModal(id); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') ['modal-detail','modal-add','modal-confirm'].forEach(closeModal);
+});
+
+// ─── ADD MODAL ───
+function openAddModal() {
+  ['f-name','f-author','f-range','f-tips','s-muzzle','s-barrel','s-handguard','s-optic','s-laser','s-stock','s-grip','s-mag','s-ammo','st-dmg','st-acc','st-rpm','st-ctrl']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('f-cat').value = '';
+  document.getElementById('f-tier').value = 'A';
+  openModal('modal-add');
+}
+
+const CAT_LABELS = { ar:'Assault Rifle', smg:'SMG', sniper:'Sniper Rifle', shotgun:'Shotgun', lmg:'LMG', pistol:'Pistol' };
+const CAT_ICONS  = { ar:'🔫', smg:'🔫', sniper:'🎯', shotgun:'💥', lmg:'🔥', pistol:'🔫' };
+
+function saveLoadout() {
+  const name   = document.getElementById('f-name').value.trim();
+  const author = document.getElementById('f-author').value.trim();
+  const cat    = document.getElementById('f-cat').value;
+  if (!name) { alert('Nama loadout wajib diisi!'); return; }
+  if (!cat)  { alert('Pilih kategori senjata dulu!'); return; }
+
+  const slots = [
+    {slot:'Muzzle',    name: document.getElementById('s-muzzle').value.trim()},
+    {slot:'Barrel',    name: document.getElementById('s-barrel').value.trim()},
+    {slot:'Handguard', name: document.getElementById('s-handguard').value.trim()},
+    {slot:'Optic',     name: document.getElementById('s-optic').value.trim()},
+    {slot:'Laser',     name: document.getElementById('s-laser').value.trim()},
+    {slot:'Stock',     name: document.getElementById('s-stock').value.trim()},
+    {slot:'Grip',      name: document.getElementById('s-grip').value.trim()},
+    {slot:'Magazine',  name: document.getElementById('s-mag').value.trim()},
+    {slot:'Ammo',      name: document.getElementById('s-ammo').value.trim()},
+  ].filter(s => s.name);
+
+  const newLd = {
+    id: 'user-' + Date.now(),
+    title: name,
+    type: cat,
+    typeLabel: CAT_LABELS[cat] || cat,
+    tier: document.getElementById('f-tier').value,
+    author: author || 'Anonim',
+    range: document.getElementById('f-range').value.trim() || '-',
+    icon: CAT_ICONS[cat] || '🔫',
+    slots: slots,
+    stats: {
+      dmg:  parseInt(document.getElementById('st-dmg').value)  || 0,
+      acc:  parseInt(document.getElementById('st-acc').value)  || 0,
+      rpm:  parseInt(document.getElementById('st-rpm').value)  || 0,
+      ctrl: parseInt(document.getElementById('st-ctrl').value) || 0,
+    },
+    tips: document.getElementById('f-tips').value.trim(),
+    likes: 0
+  };
+
+  loadouts.unshift(newLd);
+  saveToStorage();
+  closeModal('modal-add');
+  currentFilter = 'all';
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-filter="all"]').classList.add('active');
+  renderGrid();
+  showNotif('✓ Loadout Ditambahkan!', `"${name}" berhasil disimpan.`);
+}
+
+// ─── DELETE ───
+function askDelete(e, id, title) {
+  e.stopPropagation();
+  pendingDeleteId = id;
+  document.getElementById('confirm-name').textContent = '"' + title + '"';
+  openModal('modal-confirm');
+}
+function confirmDelete() {
+  if (!pendingDeleteId) return;
+  loadouts = loadouts.filter(ld => ld.id !== pendingDeleteId);
+  saveToStorage();
+  renderGrid();
+  closeModal('modal-confirm');
+  showNotif('🗑️ Dihapus', 'Loadout berhasil dihapus.', 'var(--red)');
+  pendingDeleteId = null;
+}
+
+// ─── DETAIL MODAL ───
+function openDetail(id) {
+  const ld = loadouts.find(l => l.id === id);
+  if (!ld) return;
+  const tierClass = `tier-${ld.tier}`;
+  const filled = (ld.slots||[]).filter(s => s.name);
+  const slotsHtml = filled.length
+    ? filled.map(s => `<div class="attach-item"><div class="attach-item-slot">${escHtml(s.slot)}</div><div class="attach-item-name">${escHtml(s.name)}</div></div>`).join('')
+    : '<p style="color:var(--text-muted);font-size:13px">Tidak ada attachment yang diisi.</p>';
+
+  document.getElementById('modal-detail-inner').innerHTML = `
+    <div class="modal-type">${escHtml(ld.typeLabel)}</div>
+    <div class="modal-big-title">${escHtml(ld.title)} <span class="tier-badge ${tierClass}">${ld.tier}-TIER</span></div>
+    <div class="modal-section">
+      <h3>Attachment Lengkap</h3>
+      <div class="attach-full">${slotsHtml}</div>
+    </div>
+    <div class="modal-section">
+      <h3>Statistik</h3>
+      <div class="stats-row" style="border:none;padding:0">
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px;color:${statColor('dmg',ld.stats.dmg)}">${ld.stats.dmg||'—'}</div><div class="stat-mini-key">Damage</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px;color:${statColor('acc',ld.stats.acc)}">${ld.stats.acc||'—'}</div><div class="stat-mini-key">Accuracy</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px">${ld.stats.rpm||'—'}</div><div class="stat-mini-key">RPM</div></div>
+        <div class="stat-mini"><div class="stat-mini-val" style="font-size:24px;color:${statColor('ctrl',ld.stats.ctrl)}">${ld.stats.ctrl||'—'}</div><div class="stat-mini-key">Control</div></div>
+      </div>
+    </div>
+    ${ld.tips ? `<div class="modal-section"><h3>Tips & Catatan</h3><div class="modal-note"><strong>Tips:</strong> ${escHtml(ld.tips)}</div></div>` : ''}
+    <div style="font-size:13px;color:var(--text-muted);margin-top:0.5rem">Oleh: ${escHtml(ld.author||'Anonim')} &nbsp;·&nbsp; ♥ ${ld.likes||0} &nbsp;·&nbsp; ${escHtml(ld.range||'-')}`;
+  openModal('modal-detail');
+}
+
+// ─── NOTIF ───
+function showNotif(title, msg, color) {
+  const n = document.getElementById('notif');
+  document.getElementById('notif-title').textContent = title;
+  document.getElementById('notif-title').style.color = color || 'var(--green)';
+  document.getElementById('notif-msg').textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 3200);
+}
+
+// ─── INIT ───
+loadFromStorage();
+renderGrid();
+</script>
+</body>
+</html>
